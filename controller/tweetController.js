@@ -109,5 +109,6 @@ const tweetController = {
     } catch (err) {
       console.warn(err)
     }
-  }
+  },
 }
+module.exports = tweetController

@@ -34,9 +34,36 @@
         </p>
         <small>{{momentCH tweet.createdAt}}</small>
         {{!-- Reply and Like --}}
-        <div>
+        <div style="border-bottom: 1px solid #dadde1;">
           <span>{{replyCount}} 回復</span>
           <span>{{likeCount}} 喜歡次數</span>
+        </div>
+        <div class="feedback-action"
+          style="display: flex;justify-content: space-around;align-items: center;font-weight: 600;font-size: 14px;height: 32px;color: #606770;margin: 10px 20px;min-height: 32px;padding: 4px 0 10px 0; border-bottom: 1px solid #dadde1;">
+
+          <form action="/reply/{{tweet.id}}" method="POST">
+            <button type="submit" class="btn btn-outline-secondary" style="border: hidden;">
+              <i class="fa fa-comment-o fa-2x"></i>
+            </button>
+          </form>
+
+          {{!-- {{#if isLiked }} --}}
+          {{!-- <form action="/like/{{tweet.id}}?_method=DELETE" method="POST" style="display: inline-block;">
+            <button type="submit" class="btn btn btn-outline-danger">
+              <i class="fa fa-heart fa-2x"></i></button>
+          </form> --}}
+          {{!-- {{else}} --}}
+          <form action="/like/{{tweet.id}}" method="POST">
+            <button type="submit" class="btn btn-outline-secondary" style="border: hidden;">
+              <i class="fa fa-heart-o fa-2x"></i>
+            </button>
+          </form>
+          {{!-- {{/if}} --}}
+
+
+
+
+
         </div>
       </div>
     </div>
