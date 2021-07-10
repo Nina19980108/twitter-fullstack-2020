@@ -16,9 +16,9 @@
 <body>
   <div class="container">
 
-    <div class="d-flex mt-5">
+    <div class="d-flex m-5">
       {{!-- 左側欄位 --}}
-      <div class="row" style="height: 500px;width: 250px;">
+      <div class="row" style="height: 500px;width: 30vh;">
 
 
         {{!-- 如果有登入才顯示 --}}
@@ -69,7 +69,7 @@
       </div>
 
       {{!-- 中間主頁 --}}
-      <div style="flex-grow: 1;">
+      <div style="width: 90vh;padding-left:10px">
 
         {{!-- flash --}}
         {{#if success_messages}}
@@ -89,9 +89,8 @@
         </main>
       </div>
 
-
       {{!-- 右側欄位 --}}
-      <div style="width:30vh">
+      <div style="width:30vh; margin-right:60px;">
         {{#if user}}
         {{> recommendedFollower }}
         {{/if}}

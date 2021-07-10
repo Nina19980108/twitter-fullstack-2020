@@ -86,7 +86,7 @@ module.exports = (app, passport) => {
 
   //前台
   app.get('/', authenticated, (req, res) => res.redirect('/tweets'))
-  app.get('/tweets', authenticated, tweetController.getTweets)
+  app.get('/tweets', authenticated, getTopFollowing, tweetController.getTweets)
 
   //登入、註冊、登出
   app.get('/signup', userController.signUpPage)
@@ -95,10 +95,7 @@ module.exports = (app, passport) => {
   app.post('/signin', passport.authenticate('local', { failureRedirect: '/signin', failureFlash: true }), userController.signIn)
   app.get('/signout', userController.signOut)
 
-
-  app.get('/', authenticated, (req, res) => res.redirect('/tweets'))
-  app.get('/tweets', authenticated, getTopFollowing, tweetController.getTweets)
-
+  //使用者相關
   app.get('/users/:userId/tweets', authenticated, getTopFollowing, userController.getUserTweets)
   app.get('/tweets/:tweetId', authenticated, getTopFollowing, tweetController.getTweet)
   app.post('/tweets/:tweetId/like', authenticated, userController.addLike)
