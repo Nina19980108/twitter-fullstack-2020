@@ -91,8 +91,11 @@ module.exports = (app, passport) => {
 
   app.get('/', authenticated, (req, res) => res.redirect('/tweets'))
   app.get('/tweets', authenticated, getTopFollowing, tweetController.getTweets)
+
   app.get('/users/:userId/tweets', authenticated, getTopFollowing, userController.getUserTweets)
   app.get('/tweets/:tweetId', authenticated, getTopFollowing, tweetController.getTweet)
+  app.post('/tweets/:tweetId/like', authenticated, userController.addLike)
+  app.delete('/tweets/:tweetId', authenticated, userController.removeLike)
 
   app.get('/users/:userId/edit', authenticated, userController.getUserEdit)
   app.put('/users/:userId', authenticated, userController.putUserEdit)

@@ -97,13 +97,20 @@ const tweetController = {
           [sequelize.fn('count', sequelize.col('id')), 'likeCounts']
         ]
       })
+      const likers = await Like.findAll({
+        raw: true,
+        nest: true,
+        where: { TweetId: tweet.id },
+        attributes: ['UserId']
+      })
+      const isLiked = likers.map(d => d.UserId).includes(helpers.getUser(req).id)
 
       return res.render('singleTweet', {
         tweet,
         replyCount: replies.count,
         reply: replies.rows,
         likeCount: likes[0].likeCounts,
-        topFollowing
+        topFollowing, isLiked
       })
 
     } catch (err) {
