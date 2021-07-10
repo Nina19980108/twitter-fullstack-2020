@@ -91,7 +91,11 @@
 
 
       {{!-- 右側欄位 --}}
-      <div style="width:30vh"></div>
+      <div style="width:30vh">
+        {{#if user}}
+        {{> recommendedFollower }}
+        {{/if}}
+      </div>
 
     </div>
 

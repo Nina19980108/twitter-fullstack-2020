@@ -18,15 +18,19 @@ const getTopFollowing = async (req, res, next) => {
 
     let Data = []
     Data = users.map(async (user, index) => {
+
       const [following] = await Promise.all([
         Followship.findAndCountAll({
           raw: true,
           nest: true,
           where: {
+            //Followship裡面，user 追蹤的 followingId 有幾個是這個user.Id，表示這個user.Id有幾個追蹤者
+            //因此得到了每個user的 follower數字
             followingId: user.id
           }
         })
       ])
+
       return {
         id: user.id,
         name: user.name,
@@ -36,7 +40,10 @@ const getTopFollowing = async (req, res, next) => {
         //isFollow 等有使用者登入認證之後才做
       }
     })
+    console.log('列印出：')
+    console.log(Data)
     Promise.all(Data).then(data => {
+
       data = data.sort((a, b) => b.followerCount - a.followerCount)
       res.locals.data = data
       return next()
