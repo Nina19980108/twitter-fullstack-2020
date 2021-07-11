@@ -67,7 +67,7 @@ const userController = {
   //首頁
   getUserTweets: (req, res) => {
     const topFollowing = res.locals.data
-    console.log(topFollowing)
+    // console.log(topFollowing)
     return User.findOne({
       where: {
         id: req.params.userId
@@ -76,24 +76,30 @@ const userController = {
       Followship.findAndCountAll({
         raw: true,
         nest: true,
+        //使用者追蹤的所有人
         where: { followerId: user.id },
       }).then(following => {
         Followship.findAndCountAll({
           raw: true,
           nest: true,
+          //追蹤使用者的所有人
           where: { followingId: user.id },
         }).then(follower => {
           Tweet.findAll({
             raw: true,
             nest: true,
+            //使用者發的所有推文
             where: { userId: user.id },
           }).then(tweets => {
+            const isFollowed = follower.rows.map(f => f.followerId).includes(helpers.getUser(req).id)
+
             return res.render('tweets', {
               user,
               followingCount: following.count,
               followerCount: follower.count,
               tweets,
-              topFollowing
+              topFollowing,
+              isFollowed
             })
           })
         })

@@ -1,40 +1,28 @@
 <div class="d-flex mt-5">
-  {{!-- 左側欄位 --}}
-  <div class="row" style="height: 500px;width: 250px;">
-    {{!-- 上 --}}
-    <div class="col-12">
-      <p>Twitter</p>
-    </div>
-    {{!-- 中 --}}
-    <div class="col-12 pt-0">
-      <a href="/" style=" text-decoration:none;color:rgb(179, 123, 50)">
-        <p>首頁</p>
-      </a>
-      <a href="/users/{{user.id}}" style=" text-decoration:none;color:rgb(0, 0, 0)">
-        <p>個人資料</p>
-      </a>
-      <a href="/users/{{user.id}}/edit" style=" text-decoration:none;color:rgb(0, 0, 0)">
-        <p>設定</p>
-      </a>
-      <a href="/users/{{user.id}}/tweets" style=" text-decoration:none;color:rgb(0, 0, 0)">
-        <p>推文</p>
-      </a>
-    </div>
-    {{!-- 下 --}}
-    <div class="col-12">
-      <p>登出</p>
-    </div>
-  </div>
-
   <div style="width: 780px;" class="me-5">
     {{!-- 標題 --}}
     <div class="d-flex flex-column">
       <img src="{{ user.cover }}" alt="" srcset="" style="height: 300px;object-fit: cover;">
-      <div class="d-flex flex-column ms-4">
+      {{!-- 顯示追蹤狀態 --}}
+      <div style="display: flex; flex-direction:row;justify-content:flex-end">
+        {{#if isFollowed}}
+        <form action="/users/{{ user.id }}/unfollow" method="post" class="mt-2">
+          <button class="btn btn-sm btn-outline-danger" style="display:inline-block;border:solid">追蹤中</button>
+        </form>
+        {{else}}
+        <form action="/users/{{ user.id }}/follow" method="post" class="mt-2">
+          <button class="btn btn-sm btn-outline-secondary" style="display:inline-block;">追蹤</button>
+        </form>
+        {{/if}}
+      </div>
+      <div class=" d-flex flex-column ms-4">
         <img src="{{ user.avatar }}" alt="" srcset=""
           style="height: 200px;width:200px;object-fit: cover;margin-top:-100px;border-radius:50%;border: solid 10px white">
-        <p class="fs-3 fw-bold mb-0">{{ user.name }}</p>
+
+        <p class="fs-3 fw-bold mb-0" style="display:inline-block;width:fit-content;">{{ user.name }}</p>
         <p style="color: darkseagreen;">{{ user.account }}</p>
+
+
         <p>{{ user.introduction }}</p>
 
         <div class="d-flex">
@@ -84,5 +72,4 @@
     </div>
   </div>
 
-  <div>{{> recommendedFollower }}</div>
 </div>
