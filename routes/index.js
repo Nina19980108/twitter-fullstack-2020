@@ -4,6 +4,8 @@ const helpers = require('../_helpers')
 const userController = require('../controller/userController')
 const adminController = require('../controller/adminController')
 const tweetController = require('../controller/tweetController')
+const apiController = require('../controller/apiController')
+const replyController = require('../controller/replyController')
 
 const db = require('../models')
 const Followship = db.Followship
@@ -83,6 +85,8 @@ module.exports = (app, passport) => {
   app.get('/tweets', authenticated, getTopFollowing, tweetController.getTweets)
   app.post('/tweets', authenticated, getTopFollowing, tweetController.postTweet)
   app.get('/tweets/:tweetId', authenticated, getTopFollowing, tweetController.getTweet)
+  app.get('/tweets/:tweetId/replies', authenticated, getTopFollowing, tweetController.getTweet)
+  app.post('/tweets/:tweetId/replies', authenticated, getTopFollowing, replyController.postReply)
 
   app.get('/users/:userId/replies', authenticated, getTopFollowing, userController.getUserInfo, userController.getUserReplies)
   app.get('/users/:userId/likes', authenticated, getTopFollowing, userController.getUserInfo, userController.getUserLikes)
@@ -90,4 +94,5 @@ module.exports = (app, passport) => {
   app.get('/users/:userId/followings', authenticated, getTopFollowing, userController.getUserInfo, userController.getUserFollowings)
   app.get('/users/:userId/followers', authenticated, getTopFollowing, userController.getUserInfo, userController.getUserFollowers)
 
+  app.get('/api/tweet/:tweetId', authenticated, apiController.getTweet)
 }
