@@ -25,7 +25,7 @@ const getTopFollowing = async (req, res, next) => {
           nest: true,
           where: {
             //Followship裡面，user 追蹤的 followingId 有幾個是這個user.Id，表示這個user.Id有幾個追蹤者
-            //因此得到了每個user的 follower數字
+            //因此得到了每個user的 follower數字(有多少followingId，代表被多少人追蹤)
             followingId: user.id
           }
         })
@@ -36,12 +36,10 @@ const getTopFollowing = async (req, res, next) => {
         name: user.name,
         avatar: user.avatar,
         account: user.account,
-        followerCount: following.count
-        //isFollow 等有使用者登入認證之後才做
+        followerCount: following.count,
+        isFollowed: following.rows.map(f => f.followerId).includes(helpers.getUser(req).id)
       }
     })
-    console.log('列印出：')
-    console.log(Data)
     Promise.all(Data).then(data => {
 
       data = data.sort((a, b) => b.followerCount - a.followerCount)
@@ -100,6 +98,8 @@ module.exports = (app, passport) => {
   app.get('/tweets/:tweetId', authenticated, getTopFollowing, tweetController.getTweet)
   app.post('/tweets/:tweetId/like', authenticated, userController.addLike)
   app.delete('/tweets/:tweetId', authenticated, userController.removeLike)
+  app.post('/users/:userId/unfollow', authenticated, userController.unFollow)
+  app.post('/users/:userId/follow', authenticated, userController.follow)
 
   app.get('/users/:userId/edit', authenticated, userController.getUserEdit)
   app.put('/users/:userId', authenticated, userController.putUserEdit)

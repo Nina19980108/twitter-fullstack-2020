@@ -422,5 +422,30 @@ const userController = {
           })
       })
   },
+  //追蹤使用者
+  follow: (req, res) => {
+    return Followship.create({
+      followerId: helpers.getUser(req).id,
+      followingId: req.params.userId
+    })
+      .then((followship) => {
+        return res.redirect('back')
+      })
+  },
+  //取消追蹤使用者
+  unFollow: (req, res) => {
+    return Followship.findOne({
+      where: {
+        followerId: helpers.getUser(req).id,
+        followingId: req.params.userId
+      }
+    })
+      .then((followship) => {
+        followship.destroy()
+          .then((followship) => {
+            return res.redirect('back')
+          })
+      })
+  },
 }
 module.exports = userController
