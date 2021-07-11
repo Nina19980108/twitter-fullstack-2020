@@ -180,22 +180,27 @@ const userController = {
     const top5Following = topFollowing.slice(0, 5)
     const userInfo = res.locals.userInfo
     try {
+      //所有的like清單裡面屬於userInfo.user.id的
       const likes = await Like.findAll({
         raw: true,
         nest: true,
         where: {
           UserId: userInfo.user.id
         },
+        //撈出userInfo.user.id關聯的推文
         include: [Tweet]
       })
 
       let Data = []
+      //userInfo.user.id的like做資料陣列處理（已經撈到關聯推文）
       Data = likes.map(async (like, index) => {
+        //從資料庫裡面查找userInfo.user.id的like, 其user, tweet, reply關聯資料
         const [tweetUser, likes, replies] = await Promise.all([
           User.findOne({
             raw: true,
             nest: true,
             where: {
+              //關聯推文資料的UserId
               id: like.Tweet.UserId
             }
           }),
@@ -203,6 +208,7 @@ const userController = {
             raw: true,
             nest: true,
             where: {
+              //Like資料有關聯TweetId，而與user.id有關的TweetId，可以用來對應Like資料庫裡，有多少相同的TweetId，表示有多少人喜歡的數字
               TweetId: like.TweetId
             }
           }),
