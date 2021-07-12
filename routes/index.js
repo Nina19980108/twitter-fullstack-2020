@@ -94,7 +94,7 @@ module.exports = (app, passport) => {
   app.get('/tweets/:tweetId', authenticated, getTopFollowing, tweetController.getTweet)
   app.post('/tweets/:tweetId/like', authenticated, userController.addLike)
   app.delete('/tweets/:tweetId', authenticated, userController.removeLike)
-  
+
   //登入、註冊、登出
   app.get('/signup', userController.signUpPage)
   app.post('/signup', userController.signUp)
@@ -106,10 +106,12 @@ module.exports = (app, passport) => {
   app.get('/users/:userId/replies', authenticated, getTopFollowing, userController.getUserInfo, userController.getUserReplies)
   app.get('/users/:userId/likes', authenticated, getTopFollowing, userController.getUserInfo, userController.getUserLikes)
   app.get('/users/:userId/tweets', authenticated, getTopFollowing, userController.getUserTweets)
+  app.get('/users/:userId/followings', authenticated, getTopFollowing, userController.getUserInfo, userController.getUserFollowings)
+  app.get('/users/:userId/followers', authenticated, getTopFollowing, userController.getUserInfo, userController.getUserFollowers)
   app.post('/users/:userId/unfollow', authenticated, userController.unFollow)
   app.post('/users/:userId/follow', authenticated, userController.follow)
   app.get('/users/:userId/edit', authenticated, userController.getUserEdit)
   app.put('/users/:userId', authenticated, userController.putUserEdit)
-  
+
   app.get('/api/tweet/:tweetId', authenticated, apiController.getTweet)
 }
