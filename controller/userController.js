@@ -133,6 +133,7 @@ const userController = {
       return res.render('/')
     }
   },
+
   getUserLikes: async (req, res) => {
     const topFollowing = res.locals.data
     const top5Following = topFollowing.slice(0, 5)
@@ -238,7 +239,6 @@ const userController = {
     })
   },
 
-
   getUserReplies: async (req, res) => {
     const topFollowing = res.locals.data
     const top5Following = topFollowing.slice(0, 5)
@@ -312,6 +312,7 @@ const userController = {
       return res.render('/')
     }
   },
+
   getUserLikes: async (req, res) => {
     const topFollowing = res.locals.data
     const top5Following = topFollowing.slice(0, 5)
@@ -378,7 +379,7 @@ const userController = {
     }
     catch (err) {
       console.log('getUserLikes err')
-      return res.render('/')
+      return res.redirect('/')
     }
   },
 
@@ -421,8 +422,9 @@ const userController = {
       })
     }
     catch (err) {
+      console.log(err)
       console.log('getUserFollowings err')
-      return res.render('/')
+      return res.redirect('/')
     }
   },
 
@@ -465,8 +467,9 @@ const userController = {
       })
     }
     catch (err) {
+      console.log(err)
       console.log('getUserFollowers err')
-      return res.render('/')
+      return res.redirect('/')
     }
   },
 
@@ -499,6 +502,7 @@ const userController = {
       })
     })
   },
+
   //進入帳號設定頁面
   getUserEdit: (req, res) => {
     return User.findByPk(req.params.userId)
@@ -531,7 +535,7 @@ const userController = {
         })
     }
   },
-  
+
   //按讚
   addLike: (req, res) => {
     return Like.create({
@@ -542,7 +546,7 @@ const userController = {
         return res.redirect('back')
       })
   },
-  
+
   //取消按讚
   removeLike: (req, res) => {
     return Like.findOne({
@@ -559,7 +563,7 @@ const userController = {
           })
       })
   },
-  
+
   //追蹤使用者
   follow: (req, res) => {
     return Followship.create({
@@ -570,7 +574,7 @@ const userController = {
         return res.redirect('back')
       })
   },
-  
+
   //取消追蹤使用者
   unFollow: async (req, res) => {
     try {
@@ -585,7 +589,8 @@ const userController = {
     } catch (err) {
       console.warn(err)
     }
-    
+  },
+
   //MiddleWare
   getUserInfo: (req, res, next) => {
     return User.findOne({
@@ -596,7 +601,7 @@ const userController = {
       Followship.findAndCountAll({
         raw: true,
         nest: true,
-        where: { followerId: user.id },
+        where: { followerId: user.id }
       }).then(following => {
         Followship.findAndCountAll({
           raw: true,
@@ -605,6 +610,8 @@ const userController = {
         }).then(follower => {
           res.locals.userInfo = {
             user: user.dataValues,
+            followings: following.rows,
+            followers: follower.rows,
             followingCount: following.count,
             followerCount: follower.count
           }
@@ -613,6 +620,7 @@ const userController = {
       })
     })
   },
+
   //按讚
   addLike: (req, res) => {
     return Like.create({
@@ -623,6 +631,7 @@ const userController = {
         return res.redirect('back')
       })
   },
+
   //取消按讚
   removeLike: (req, res) => {
     return Like.findOne({

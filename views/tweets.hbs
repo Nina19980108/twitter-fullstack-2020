@@ -51,8 +51,14 @@
         <p>{{ user.introduction }}</p>
 
         <div class="d-flex">
-          <p class="me-3">{{ followingCount }} 個追蹤中</p>
-          <p>{{ followerCount }} 位跟隨者</p>
+          <a href="/users/{{ user.id }}/followers" class="me-3 d-flex" style="color: black;text-decoration:none;">
+            <p>{{ followerCount }} 位</p>
+            <p style="color: rgb(82, 82, 82);" class="ms-1">跟隨者</p>
+          </a>
+          <a href="/users/{{ user.id }}/followings" class="me-3 d-flex" style="color: black;text-decoration:none;">
+            <p>{{ followingCount }} 個</p>
+            <p style="color: rgb(82, 82, 82);" class="ms-1">追蹤中</p>
+          </a>
         </div>
 
         {{!-- select bar --}}
