@@ -6,9 +6,7 @@ const Tweet = db.Tweet
 const Like = db.Like
 const Followship = db.Followship
 const Reply = db.Reply
-
 const pageLimit = 10
-
 const tweetController = {
   getTweets: async (req, res) => {
     try {
@@ -21,7 +19,6 @@ const tweetController = {
       if (req.query.page) {
         offset = (Number(req.query.page) - 1) * pageLimit
       }
-
       const tweets = await Tweet.findAndCountAll({
         raw: true,
         nest: true,
@@ -33,7 +30,6 @@ const tweetController = {
         limit: pageLimit,
         order: [['updatedAt', 'DESC']]
       })
-
       let Data = []
       Data = tweets.rows.map(async (tweet, index) => {
         const [replyCount, likeCount] = await Promise.all([
@@ -54,13 +50,11 @@ const tweetController = {
           likeCount: likeCount.count
         }
       })
-
       const page = Number(req.query.page) || 1
       const pages = Math.ceil(tweets.count / pageLimit)
       const totalPage = Array.from({ length: pages }, (item, index) => index + 1)
       const prev = page - 1 < 1 ? 1 : page - 1
       const next = page + 1 > pages ? pages : page + 1
-
       Promise.all(Data).then(data => {
         return res.render('index', {
           data,
@@ -135,4 +129,5 @@ const tweetController = {
   }
 }
 
+}
 module.exports = tweetController
