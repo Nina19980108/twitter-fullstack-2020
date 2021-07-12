@@ -117,5 +117,22 @@ const tweetController = {
       console.warn(err)
     }
   },
+
+  postTweet: async (req, res) => {
+    try {
+      const { description } = req.body
+      if (description === '') {
+        return res.redirect('/')
+      }
+
+      await Tweet.create({
+        description: description,
+        UserId: helpers.getUser(req).id
+      })
+      return res.redirect('/')
+    } catch (err) {
+      console.warn(err)
+    }
+  },
 }
 module.exports = tweetController
