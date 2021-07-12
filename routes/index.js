@@ -4,6 +4,8 @@ const helpers = require('../_helpers')
 const userController = require('../controller/userController')
 const adminController = require('../controller/adminController')
 const tweetController = require('../controller/tweetController')
+const apiController = require('../controller/apiController')
+const replyController = require('../controller/replyController')
 
 const db = require('../models')
 const Followship = db.Followship
@@ -18,25 +20,30 @@ const getTopFollowing = async (req, res, next) => {
 
     let Data = []
     Data = users.map(async (user, index) => {
+
       const [following] = await Promise.all([
         Followship.findAndCountAll({
           raw: true,
           nest: true,
           where: {
+            //Followship裡面，user 追蹤的 followingId 有幾個是這個user.Id，表示這個user.Id有幾個追蹤者
+            //因此得到了每個user的 follower數字(有多少followingId，代表被多少人追蹤)
             followingId: user.id
           }
         })
       ])
+
       return {
         id: user.id,
         name: user.name,
         avatar: user.avatar,
         account: user.account,
-        followerCount: following.count
-        //isFollow 等有使用者登入認證之後才做
+        followerCount: following.count,
+        isFollowed: following.rows.map(f => f.followerId).includes(helpers.getUser(req).id)
       }
     })
     Promise.all(Data).then(data => {
+
       data = data.sort((a, b) => b.followerCount - a.followerCount)
       res.locals.data = data
       return next()
@@ -79,8 +86,15 @@ module.exports = (app, passport) => {
 
   //前台
   app.get('/', authenticated, (req, res) => res.redirect('/tweets'))
-  app.get('/tweets', authenticated, tweetController.getTweets)
-
+  app.get('/tweets', authenticated, getTopFollowing, tweetController.getTweets)
+  app.post('/tweets', authenticated, getTopFollowing, tweetController.postTweet)
+  app.get('/tweets/:tweetId', authenticated, getTopFollowing, tweetController.getTweet)
+  app.get('/tweets/:tweetId/replies', authenticated, getTopFollowing, tweetController.getTweet)
+  app.post('/tweets/:tweetId/replies', authenticated, getTopFollowing, replyController.postReply)
+  app.get('/tweets/:tweetId', authenticated, getTopFollowing, tweetController.getTweet)
+  app.post('/tweets/:tweetId/like', authenticated, userController.addLike)
+  app.delete('/tweets/:tweetId', authenticated, userController.removeLike)
+  
   //登入、註冊、登出
   app.get('/signup', userController.signUpPage)
   app.post('/signup', userController.signUp)
@@ -88,19 +102,14 @@ module.exports = (app, passport) => {
   app.post('/signin', passport.authenticate('local', { failureRedirect: '/signin', failureFlash: true }), userController.signIn)
   app.get('/signout', userController.signOut)
 
-
-  app.get('/', authenticated, (req, res) => res.redirect('/tweets'))
-  app.get('/tweets', authenticated, getTopFollowing, tweetController.getTweets)
-
+  //使用者相關
   app.get('/users/:userId/replies', authenticated, getTopFollowing, userController.getUserInfo, userController.getUserReplies)
   app.get('/users/:userId/likes', authenticated, getTopFollowing, userController.getUserInfo, userController.getUserLikes)
-
   app.get('/users/:userId/tweets', authenticated, getTopFollowing, userController.getUserTweets)
-  app.get('/tweets/:tweetId', authenticated, getTopFollowing, tweetController.getTweet)
-  app.post('/tweets/:tweetId/like', authenticated, userController.addLike)
-  app.delete('/tweets/:tweetId', authenticated, userController.removeLike)
-
+  app.post('/users/:userId/unfollow', authenticated, userController.unFollow)
+  app.post('/users/:userId/follow', authenticated, userController.follow)
   app.get('/users/:userId/edit', authenticated, userController.getUserEdit)
   app.put('/users/:userId', authenticated, userController.putUserEdit)
-
+  
+  app.get('/api/tweet/:tweetId', authenticated, apiController.getTweet)
 }

@@ -30,10 +30,23 @@
     {{!-- 標題 --}}
     <div class="d-flex flex-column">
       <img src="{{ user.cover }}" alt="" srcset="" style="height: 300px;object-fit: cover;">
-      <div class="d-flex flex-column ms-4">
+      {{!-- 顯示追蹤狀態 --}}
+      <div style="display: flex; flex-direction:row;justify-content:flex-end">
+        {{#if isFollowed}}
+        <form action="/users/{{ user.id }}/unfollow" method="post" class="mt-2">
+          <button class="btn btn-sm btn-outline-danger" style="display:inline-block;border:solid">追蹤中</button>
+        </form>
+        {{else}}
+        <form action="/users/{{ user.id }}/follow" method="post" class="mt-2">
+          <button class="btn btn-sm btn-outline-secondary" style="display:inline-block;">追蹤</button>
+        </form>
+        {{/if}}
+      </div>
+      <div class=" d-flex flex-column ms-4">
         <img src="{{ user.avatar }}" alt="" srcset=""
           style="height: 200px;width:200px;object-fit: cover;margin-top:-100px;border-radius:50%;border: solid 10px white">
-        <p class="fs-3 fw-bold mb-0">{{ user.name }}</p>
+
+        <p class="fs-3 fw-bold mb-0" style="display:inline-block;width:fit-content;">{{ user.name }}</p>
         <p style="color: darkseagreen;">{{ user.account }}</p>
         <p>{{ user.introduction }}</p>
 
