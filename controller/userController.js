@@ -572,7 +572,7 @@ const userController = {
   //取消追蹤使用者
   unFollow: async (req, res) => {
     try {
-      const followship = await Followship.findOne({
+      await Followship.destroy({
         where: {
           followerId: helpers.getUser(req).id,
           followingId: req.params.userId
@@ -581,7 +581,7 @@ const userController = {
       // console.log(followship.followerId)
       // console.log(followship.followingId)
       // console.log(followship)
-      await followship.destroy()
+
       return res.redirect('back')
 
     } catch (err) {
