@@ -439,19 +439,23 @@ const userController = {
       })
   },
   //取消追蹤使用者
-  unFollow: (req, res) => {
-    return Followship.findOne({
-      where: {
-        followerId: helpers.getUser(req).id,
-        followingId: req.params.userId
-      }
-    })
-      .then((followship) => {
-        followship.destroy()
-          .then((followship) => {
-            return res.redirect('back')
-          })
+  unFollow: async (req, res) => {
+    try {
+      const followship = await Followship.findOne({
+        where: {
+          followerId: helpers.getUser(req).id,
+          followingId: req.params.userId
+        }
       })
+      // console.log(followship.followerId)
+      // console.log(followship.followingId)
+      // console.log(followship)
+      await followship.destroy()
+      return res.redirect('back')
+
+    } catch (err) {
+      console.warn(err)
+    }
   },
 }
 module.exports = userController
