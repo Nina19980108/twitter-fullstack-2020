@@ -110,6 +110,6 @@ module.exports = (app, passport) => {
   app.post('/users/:userId/follow', authenticated, userController.follow)
   app.get('/users/:userId/edit', authenticated, userController.getUserEdit)
   app.put('/users/:userId', authenticated, userController.putUserEdit)
-
+  
   app.get('/api/tweet/:tweetId', authenticated, apiController.getTweet)
 }

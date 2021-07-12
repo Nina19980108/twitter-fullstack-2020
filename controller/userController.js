@@ -613,5 +613,31 @@ const userController = {
       })
     })
   },
+  //按讚
+  addLike: (req, res) => {
+    return Like.create({
+      UserId: helpers.getUser(req).id,
+      TweetId: req.params.tweetId
+    })
+      .then((like) => {
+        return res.redirect('back')
+      })
+  },
+  //取消按讚
+  removeLike: (req, res) => {
+    return Like.findOne({
+      where: {
+        UserId: helpers.getUser(req).id,
+        TweetId: req.params.tweetId
+      }
+    })
+      .then((like) => {
+        // return console.log(like)
+        like.destroy()
+          .then((tweet) => {
+            return res.redirect('back')
+          })
+      })
+  },
 }
 module.exports = userController
