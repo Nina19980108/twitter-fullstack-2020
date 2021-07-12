@@ -4,6 +4,8 @@ const helpers = require('../_helpers')
 const userController = require('../controller/userController')
 const adminController = require('../controller/adminController')
 const tweetController = require('../controller/tweetController')
+const apiController = require('../controller/apiController')
+const replyController = require('../controller/replyController')
 
 const db = require('../models')
 const Followship = db.Followship
@@ -96,6 +98,8 @@ module.exports = (app, passport) => {
   app.get('/', authenticated, (req, res) => res.redirect('/tweets'))
   app.get('/tweets', authenticated, getTopFollowing, tweetController.getTweets)
   app.get('/tweets/:tweetId', authenticated, getTopFollowing, tweetController.getTweet)
+  app.get('/tweets/:tweetId/replies', authenticated, getTopFollowing, tweetController.getTweet)
+  app.post('/tweets/:tweetId/replies', authenticated, getTopFollowing, replyController.postReply)
 
   app.get('/users/:userId/replies', authenticated, getTopFollowing, userController.getUserInfo, userController.getUserReplies)
   app.get('/users/:userId/likes', authenticated, getTopFollowing, userController.getUserInfo, userController.getUserLikes)
@@ -103,4 +107,5 @@ module.exports = (app, passport) => {
   app.get('/users/:userId/edit', authenticated, userController.getUserEdit)
   app.put('/users/:userId', authenticated, userController.putUserEdit)
 
+  app.get('/api/tweet/:tweetId', authenticated, apiController.getTweet)
 }
