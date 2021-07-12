@@ -97,25 +97,37 @@ const tweetController = {
           [sequelize.fn('count', sequelize.col('id')), 'likeCounts']
         ]
       })
-      const likers = await Like.findAll({
-        raw: true,
-        nest: true,
-        where: { TweetId: tweet.id },
-        attributes: ['UserId']
-      })
-      const isLiked = likers.map(d => d.UserId).includes(helpers.getUser(req).id)
 
       return res.render('singleTweet', {
         tweet,
         replyCount: replies.count,
         reply: replies.rows,
         likeCount: likes[0].likeCounts,
-        topFollowing, isLiked
+        topFollowing
       })
 
     } catch (err) {
       console.warn(err)
     }
   },
+
+  postTweet: async (req, res) => {
+    try {
+      const { description } = req.body
+      if (description === '') {
+        return res.redirect('/')
+      }
+
+      await Tweet.create({
+        description: description,
+        UserId: helpers.getUser(req).id
+      })
+      return res.redirect('/')
+    } catch (err) {
+      console.warn(err)
+    }
+  }
+}
+
 }
 module.exports = tweetController

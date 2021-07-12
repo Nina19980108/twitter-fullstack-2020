@@ -4,6 +4,8 @@ const helpers = require('../_helpers')
 const userController = require('../controller/userController')
 const adminController = require('../controller/adminController')
 const tweetController = require('../controller/tweetController')
+const apiController = require('../controller/apiController')
+const replyController = require('../controller/replyController')
 
 const db = require('../models')
 const Followship = db.Followship
@@ -85,7 +87,14 @@ module.exports = (app, passport) => {
   //前台
   app.get('/', authenticated, (req, res) => res.redirect('/tweets'))
   app.get('/tweets', authenticated, getTopFollowing, tweetController.getTweets)
-
+  app.post('/tweets', authenticated, getTopFollowing, tweetController.postTweet)
+  app.get('/tweets/:tweetId', authenticated, getTopFollowing, tweetController.getTweet)
+  app.get('/tweets/:tweetId/replies', authenticated, getTopFollowing, tweetController.getTweet)
+  app.post('/tweets/:tweetId/replies', authenticated, getTopFollowing, replyController.postReply)
+  app.get('/tweets/:tweetId', authenticated, getTopFollowing, tweetController.getTweet)
+  app.post('/tweets/:tweetId/like', authenticated, userController.addLike)
+  app.delete('/tweets/:tweetId', authenticated, userController.removeLike)
+  
   //登入、註冊、登出
   app.get('/signup', userController.signUpPage)
   app.post('/signup', userController.signUp)
@@ -94,13 +103,13 @@ module.exports = (app, passport) => {
   app.get('/signout', userController.signOut)
 
   //使用者相關
+  app.get('/users/:userId/replies', authenticated, getTopFollowing, userController.getUserInfo, userController.getUserReplies)
+  app.get('/users/:userId/likes', authenticated, getTopFollowing, userController.getUserInfo, userController.getUserLikes)
   app.get('/users/:userId/tweets', authenticated, getTopFollowing, userController.getUserTweets)
-  app.get('/tweets/:tweetId', authenticated, getTopFollowing, tweetController.getTweet)
-  app.post('/tweets/:tweetId/like', authenticated, userController.addLike)
-  app.delete('/tweets/:tweetId', authenticated, userController.removeLike)
   app.post('/users/:userId/unfollow', authenticated, userController.unFollow)
   app.post('/users/:userId/follow', authenticated, userController.follow)
-
   app.get('/users/:userId/edit', authenticated, userController.getUserEdit)
   app.put('/users/:userId', authenticated, userController.putUserEdit)
+
+  app.get('/api/tweet/:tweetId', authenticated, apiController.getTweet)
 }
