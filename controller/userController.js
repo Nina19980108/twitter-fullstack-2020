@@ -193,7 +193,7 @@ const userController = {
     }
     catch (err) {
       console.log('getUserLikes err')
-      return res.render('/')
+      return res.redirect('/')
     }
   },
 
@@ -423,7 +423,7 @@ const userController = {
     }
     catch (err) {
       console.log('getUserFollowings err')
-      return res.render('/')
+      return res.redirect('/')
     }
   },
 
@@ -467,7 +467,7 @@ const userController = {
     }
     catch (err) {
       console.log('getUserFollowers err')
-      return res.render('/')
+      return res.redirect('/')
     }
   },
 
@@ -607,6 +607,8 @@ const userController = {
         }).then(follower => {
           res.locals.userInfo = {
             user: user.dataValues,
+            followings: following.rows,
+            followers: follower.rows,
             followingCount: following.count,
             followerCount: follower.count
           }
