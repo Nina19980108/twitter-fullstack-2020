@@ -9,6 +9,9 @@ const Reply = db.Reply
 const pageLimit = 10
 const tweetController = {
   getTweets: async (req, res) => {
+    if (helpers.getUser(req).role === 'admin') {
+      return res.redirect('/admin/tweets')
+    }
     try {
       const topFollowing = res.locals.data
       const user = {
