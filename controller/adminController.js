@@ -106,7 +106,6 @@ const adminController = {
         }
       })
       Promise.all(Data).then(data => {
-        console.log(data)
         return res.render('admin/users', { data })
       })
 
