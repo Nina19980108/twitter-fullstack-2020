@@ -369,10 +369,13 @@ const userController = {
 
   //進入帳號設定頁面
   getUserEdit: (req, res) => {
-    return User.findByPk(req.params.userId)
-      .then(user => {
-        res.render('userEdit', { user: user.toJSON() })
-      })
+    if (Number(req.params.userId) === helpers.getUser(req).id) {
+      return User.findByPk(req.params.userId)
+        .then(user => {
+          res.render('userEdit', { user: user.toJSON() })
+        })
+    }
+    return res.redirect('/')
   },
 
   putUserEdit: (req, res) => {
