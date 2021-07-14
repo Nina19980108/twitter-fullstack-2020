@@ -29,15 +29,17 @@
   <div style="width: 780px;" class="me-5">
     {{!-- 標題 --}}
     <div class="d-flex flex-column">
-      {{!-- <img src="{{ user.cover }}" alt="" srcset="" style="height: 300px;object-fit: cover;"> --}}
-      <div class="d-flex" style="position: relative;">
-        <img src="{{ user.avatar }}" alt="" srcset=""
-          style="height: 200px;width:200px;object-fit: cover;margin-top:-100px;border-radius:50%;border: solid 10px white">
-        {{#if allowEdit}}
-        <div class="d-flex flex-column align-items-end p-2"><button type="submit" class="btn post-a-tweet"
-            style="background-color: #FF6600;color: white; border-radius: 50%;font-size:20px;position:absolute;right:20px;"
-            data-bs-toggle="modal" data-bs-target="#profileModal" data-id="{{user.id}}">編輯個人頁面</button></div>
-        {{/if}}
+      <img src="{{ user.cover }}" alt="" srcset="" style="height: 300px;object-fit: cover;">
+      <div class="d-flex flex-column ms-4">
+        <div class="d-flex" style="position: relative;">
+          <img src="{{ user.avatar }}" alt="" srcset=""
+            style="height: 200px;width:200px;object-fit: cover;margin-top:-100px;border-radius:50%;border: solid 10px white">
+          {{#if allowEdit}}
+          <div class="d-flex flex-column align-items-end p-2"><button type="submit" class="btn post-a-tweet"
+              style="background-color: #FF6600;color: white; border-radius: 50%;font-size:20px;position:absolute;right:20px;"
+              data-bs-toggle="modal" data-bs-target="#profileModal" data-id="{{user.id}}">編輯個人頁面</button></div>
+          {{/if}}
+        </div>
       </div>
       {{!-- 顯示追蹤狀態 --}}
       <div style="display: flex; flex-direction:row;justify-content:flex-end">

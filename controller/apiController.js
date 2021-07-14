@@ -4,6 +4,10 @@ const Tweet = db.Tweet
 const Like = db.Like
 const Followship = db.Followship
 const Reply = db.Reply
+const imgur = require('imgur-node-api')
+const IMGUR_CLIENT_ID = process.env.IMGUR_CLIENT_ID
+
+const helpers = require('../_helpers')
 
 const apiController = {
   getTweet: async (req, res) => {
@@ -20,17 +24,17 @@ const apiController = {
     }
   },
 
-  getUser: async (req, res, callback) => {
+  getUser: async (req, res) => {
     try {
       const { userId } = req.params
       if (Number(userId) === helpers.getUser(req).id) {
         const user = await User.findByPk(userId, { attributes: ['id', 'cover', 'avatar', 'name', 'introduction'] })
-        return callback(user.toJSON())
+        return res.json(user.toJSON())
       } else {
-        return callback({ status: 'error' })
+        return res.json({ status: 'error' })
       }
     } catch (err) {
-      return callback({ status: 'error', message: err })
+      return res.json({ status: 'error', message: err })
     }
   },
 
@@ -39,11 +43,9 @@ const apiController = {
       const { userId } = req.params
       // permission deny
       if (Number(userId) !== helpers.getUser(req).id) {
-        console.log('Deny')
         return callback({ status: 'error', message: 'invalid user' })
       }
       const { name, introduction } = req.body
-      console.log('UUUUU', req.body)
       const { files } = req
       let cover = ''
       let avatar = ''

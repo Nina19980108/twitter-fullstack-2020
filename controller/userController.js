@@ -135,70 +135,6 @@ const userController = {
     }
   },
 
-  getUserLikes: async (req, res) => {
-    const topFollowing = res.locals.data
-    const top5Following = topFollowing.slice(0, 5)
-    const userInfo = res.locals.userInfo
-    try {
-      const likes = await Like.findAll({
-        raw: true,
-        nest: true,
-        where: {
-          UserId: userInfo.user.id
-        },
-        include: [Tweet]
-      })
-
-      let Data = []
-      Data = likes.map(async (like, index) => {
-        const [tweetUser, likes, replies] = await Promise.all([
-          User.findOne({
-            raw: true,
-            nest: true,
-            where: {
-              id: like.Tweet.UserId
-            }
-          }),
-          Like.findAndCountAll({
-            raw: true,
-            nest: true,
-            where: {
-              TweetId: like.TweetId
-            }
-          }),
-          Reply.findAndCountAll({
-            raw: true,
-            nest: true,
-            where: {
-              TweetId: like.TweetId
-            }
-          })
-        ])
-        return {
-          id: like.id,
-          tweetUser: tweetUser,
-          likeCount: likes.count,
-          replyCount: replies.count,
-          tweet: like.Tweet
-        }
-      })
-      Promise.all(Data).then(data => {
-        data = data.sort((a, b) => a.tweet.createdAt - b.tweet.createdAt)
-        return res.render('likes', {
-          user: userInfo.user,
-          followingCount: userInfo.followingCount,
-          followerCount: userInfo.followerCount,
-          likes: data,
-          topFollowing: top5Following
-        })
-      })
-    }
-    catch (err) {
-      console.log('getUserLikes err')
-      return res.redirect('/')
-    }
-  },
-
   getUserTweets: (req, res) => {
     const topFollowing = res.locals.data
     return User.findOne({
@@ -206,8 +142,7 @@ const userController = {
         id: req.params.userId
       }
     }).then(user => {
-      // console.log('UUUUUUUUUUUUUUUUU', req.params)
-      // const allowEdit = Number(req.params.userId) === helpers.getUser(req).id
+      const allowEdit = Number(req.params.userId) === helpers.getUser(req).id
       Followship.findAndCountAll({
         raw: true,
         nest: true,
@@ -240,80 +175,6 @@ const userController = {
         })
       })
     })
-  },
-
-  getUserReplies: async (req, res) => {
-    const topFollowing = res.locals.data
-    const top5Following = topFollowing.slice(0, 5)
-    const userInfo = res.locals.userInfo
-    try {
-      const replies = await Reply.findAll({
-        raw: true,
-        nest: true,
-        where: {
-          UserId: userInfo.user.id
-        },
-        include: [Tweet]
-      })
-
-      let Data = []
-      Data = replies.map(async (reply, index) => {
-        if (reply.Tweet.UserId) {
-          const [tweetUser, likes, replies] = await Promise.all([
-            User.findOne({
-              raw: true,
-              nest: true,
-              where: {
-                id: Number(reply.Tweet.UserId)
-              }
-            }),
-            Like.findAndCountAll({
-              raw: true,
-              nest: true,
-              where: {
-                TweetId: reply.TweetId
-              }
-            }),
-            Reply.findAndCountAll({
-              raw: true,
-              nest: true,
-              where: {
-                TweetId: reply.TweetId
-              }
-            })
-          ])
-          return {
-            id: reply.id,
-            createdAt: reply.createdAt,
-            comment: reply.comment,
-            TweetId: reply.TweetId,
-            tweetDescription: reply.Tweet.description,
-            tweetCreatedAt: reply.Tweet.createdAt,
-            tweetUserId: tweetUser.id,
-            tweetUserName: tweetUser.name,
-            tweetUserAvatar: tweetUser.avatar,
-            tweetUserAccount: tweetUser.account,
-            likeCount: likes.count,
-            replyCount: replies.count,
-          }
-        }
-      })
-      Promise.all(Data).then(data => {
-        // console.log(data)
-        data = data.sort((a, b) => a.tweetCreatedAt - b.tweetCreatedAt)
-        return res.render('replies', {
-          user: userInfo.user,
-          followingCount: userInfo.followingCount,
-          followerCount: userInfo.followerCount,
-          replies: data,
-          topFollowing: top5Following
-        })
-      })
-    }
-    catch (err) {
-      console.log('getUserReplies err')
-      return res.render('/')
-    }
   },
 
   getUserLikes: async (req, res) => {
@@ -631,34 +492,6 @@ const userController = {
         })
       })
     })
-  },
-
-  //按讚
-  addLike: (req, res) => {
-    return Like.create({
-      UserId: helpers.getUser(req).id,
-      TweetId: req.params.tweetId
-    })
-      .then((like) => {
-        return res.redirect('back')
-      })
-  },
-
-  //取消按讚
-  removeLike: (req, res) => {
-    return Like.findOne({
-      where: {
-        UserId: helpers.getUser(req).id,
-        TweetId: req.params.tweetId
-      }
-    })
-      .then((like) => {
-        // return console.log(like)
-        like.destroy()
-          .then((tweet) => {
-            return res.redirect('back')
-          })
-      })
   },
 
   // 接收 /api/users callback 路由
