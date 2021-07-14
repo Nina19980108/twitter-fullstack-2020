@@ -118,7 +118,6 @@ const userController = {
         }
       })
       Promise.all(Data).then(data => {
-        // console.log(data)
         data = data.sort((a, b) => a.tweetCreatedAt - b.tweetCreatedAt)
         return res.render('replies', {
           user: userInfo.user,
@@ -465,36 +464,6 @@ const userController = {
     } catch (err) {
       return res.redirect('back')
     }
-  },
-
-  //MiddleWare
-  getUserInfo: (req, res, next) => {
-    return User.findOne({
-      where: {
-        id: req.params.userId
-      }
-    }).then(user => {
-      Followship.findAndCountAll({
-        raw: true,
-        nest: true,
-        where: { followerId: user.id }
-      }).then(following => {
-        Followship.findAndCountAll({
-          raw: true,
-          nest: true,
-          where: { followingId: user.id },
-        }).then(follower => {
-          res.locals.userInfo = {
-            user: user.dataValues,
-            followings: following.rows,
-            followers: follower.rows,
-            followingCount: following.count,
-            followerCount: follower.count
-          }
-          return next()
-        })
-      })
-    })
   },
 
   // 接收 /api/users callback 路由

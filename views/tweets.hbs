@@ -44,11 +44,14 @@
       {{!-- 顯示追蹤狀態 --}}
       <div style="display: flex; flex-direction:row;justify-content:flex-end">
         {{#if isFollowed}}
-        <form action="/users/{{ user.id }}/unfollow" method="post" class="mt-2">
+        <form action="/followships/{{ user.id }}?_method=DELETE" method="post" class="mt-2">
           <button class="btn btn-sm btn-outline-danger" style="display:inline-block;border:solid">追蹤中</button>
         </form>
         {{else}}
-        <form action="/users/{{ user.id }}/follow" method="post" class="mt-2">
+        <form action="/followships" method="post" class="mt-2">
+          <label>
+            <input type="number" name="id" id="followInput" style="display: none;" value="{{user.id}}">
+          </label>
           <button class="btn btn-sm btn-outline-secondary" style="display:inline-block;">追蹤</button>
         </form>
         {{/if}}
