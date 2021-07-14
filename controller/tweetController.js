@@ -124,6 +124,9 @@ const tweetController = {
       if (description === '') {
         return res.redirect('/')
       }
+      if (description.length > 140) {
+        return res.redirect('/')
+      }
 
       await Tweet.create({
         description: description,

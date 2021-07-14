@@ -93,7 +93,7 @@ module.exports = (app, passport) => {
   app.post('/tweets/:tweetId/replies', authenticated, getTopFollowing, replyController.postReply)
   app.get('/tweets/:tweetId', authenticated, getTopFollowing, tweetController.getTweet)
   app.post('/tweets/:tweetId/like', authenticated, userController.addLike)
-  app.delete('/tweets/:tweetId', authenticated, userController.removeLike)
+  app.post('/tweets/:tweetId/unlike', authenticated, userController.removeLike)
 
   //登入、註冊、登出
   app.get('/signup', userController.signUpPage)
