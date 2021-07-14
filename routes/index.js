@@ -114,8 +114,8 @@ module.exports = (app, passport) => {
   app.get('/users/:userId/tweets', authenticated, getTopFollowing, userController.getUserTweets)
   app.get('/users/:userId/followings', authenticated, getTopFollowing, userController.getUserInfo, userController.getUserFollowings)
   app.get('/users/:userId/followers', authenticated, getTopFollowing, userController.getUserInfo, userController.getUserFollowers)
-  app.post('/followships', authenticated, userController.follow) // check
-  app.delete('/followships/:userId', authenticated, userController.unFollow)     // check
+  app.post('/followships', authenticated, userController.follow)
+  app.delete('/followships/:userId', authenticated, userController.unFollow)
   app.get('/users/:userId/edit', authenticated, userController.getUserEdit)
   app.put('/users/:userId', authenticated, userController.putUserEdit)
 

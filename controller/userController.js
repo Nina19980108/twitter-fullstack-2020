@@ -169,7 +169,7 @@ const userController = {
               tweets,
               topFollowing,
               isFollowed,
-              // allowEdit
+              allowEdit
             })
           })
         })
