@@ -79,15 +79,16 @@ module.exports = (app, passport) => {
   }
   //如果登入的人是管理者，並且只用在管理者登入的路由
   const isAdmin = (req, res, next) => {
-    res.locals.isAdmin = req.user.role === 'admin'
+    res.locals.isAdmin = helpers.getUser(req).role === 'admin'
     return next()
   }
 
   app.get('/admin/signin', adminController.adminSignInPage)
   app.post('/admin/signin', passport.authenticate('local', { failureRedirect: '/admin/signin', failureFlash: true }), isAdmin, adminController.adminSignIn)
   app.get('/admin/tweets', authenticatedAdmin, isAdmin, adminController.getAdminTweets)
-  app.get('/admin/users', authenticatedAdmin, isAdmin, adminController.getAdminUsers)
   app.delete('/admin/tweets/:tweetId', authenticatedAdmin, isAdmin, getTopFollowing, adminController.deleteAdminTweet)
+  app.get('/admin/users', authenticatedAdmin, isAdmin, adminController.getAdminUsers)
+
 
   //前台
   app.get('/', authenticated, (req, res) => res.redirect('/tweets'))
