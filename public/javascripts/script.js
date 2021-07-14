@@ -111,3 +111,100 @@ function replySubmitButtonClick(event) {
     tweetModalObj.hide()
   }
 }
+
+// profileModal Process
+const profileModal = document.getElementById('profileModal')
+let profileName = ''
+let profileIntro = ''
+
+if (profileModal != null) {
+  profileModalObj = new bootstrap.Modal(profileModal)
+  profileName = document.getElementById('profileName')
+  profileIntro = document.getElementById('profileIntro')
+  const coverFile = document.getElementById('coverFile')
+  const avatarFile = document.getElementById('avatarFile')
+  const coverInput = document.getElementById('uploadCover')
+  const avatarInput = document.getElementById('uploadAvatar')
+  const nameLength = document.getElementById('nameLength')
+  const introLength = document.getElementById('introLength')
+  // Modal show init
+  profileModal.addEventListener('shown.bs.modal', event => {
+    nameLength.textContent = `${profileName.value.length}/50`
+    introLength.textContent = `${profileIntro.value.length}/140`
+    coverFile.style.color = "#FFFFFF"
+    avatarFile.style.color = "#FFFFFF"
+    toastTime.textContent = getDate()
+    toastText.textContent = '開始編輯個人資料'
+    toast.show()
+  })
+  // Modal hide reset
+  profileModal.addEventListener('hide.bs.modal', event => {
+    console.log('coverInput.value', coverInput.value)
+    if (coverInput.value !== '') {
+      coverInput.value = ''
+      coverFile.style.color = "#FFFFFF"
+    }
+    console.log('avatarInput.value', avatarInput.value)
+    if (avatarInput.value !== '') {
+      avatarInput.value = ''
+      avatarFile.style.color = "#FFFFFF"
+    }
+  })
+  // update typing length
+  profileName.addEventListener('input', event => {
+    const nameStrLen = profileName.value.length
+    nameLength.textContent = `${nameStrLen}/50`
+    if (nameStrLen >= 50) {
+      nameLength.style.color = "red";
+    } else {
+      nameLength.style.color = "black";
+    }
+  })
+  profileIntro.addEventListener('input', event => {
+    const introStrLen = profileIntro.value.length
+    introLength.textContent = `${introStrLen}/140`
+    if (introStrLen >= 140) {
+      introLength.style.color = "red";
+    } else {
+      introLength.style.color = "black";
+    }
+  })
+  coverInput.addEventListener('change', event => {
+    if (coverInput.value === '') {
+      coverFile.style.color = "#FFFFFF"
+    } else {
+      coverFile.style.color = "#40E0D0"
+    }
+  })
+  avatarInput.addEventListener('change', event => {
+    if (avatarInput.value === '') {
+      avatarFile.style.color = "#FFFFFF"
+    } else {
+      avatarFile.style.color = "#40E0D0"
+    }
+  })
+}
+
+function profileSubmitButtonClick(event) {
+  event.preventDefault();
+  //other stuff you want to do instead...
+  if (profileName.value === '') {
+    toastTime.textContent = getDate()
+    toastText.textContent = '更新失敗: 沒有姓名!'
+    toast.show()
+  } else if (profileName.value.lenth > 50) {
+    toastTime.textContent = getDate()
+    toastText.textContent = '更新失敗: 姓名超過字數限制!'
+    toast.show()
+  } else if (profileIntro.value.length > 140) {
+    toastTime.textContent = getDate()
+    toastText.textContent = '更新失敗: 超過字數限制!'
+    toast.show()
+  } else {
+    toastTime.textContent = getDate()
+    toastText.textContent = '更新成功!'
+    toast.show()
+    submitForm.submit()
+    profileModalObj.hide()
+  }
+}

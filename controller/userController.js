@@ -200,12 +200,13 @@ const userController = {
 
   getUserTweets: (req, res) => {
     const topFollowing = res.locals.data
-    // console.log(topFollowing)
     return User.findOne({
       where: {
         id: req.params.userId
       }
     }).then(user => {
+      const allowEdit = Number(req.params.userId) === req.user.id
+      console.log('Permission', allowEdit)
       Followship.findAndCountAll({
         raw: true,
         nest: true,
@@ -231,7 +232,8 @@ const userController = {
               followerCount: follower.count,
               tweets,
               topFollowing,
-              isFollowed
+              isFollowed,
+              allowEdit
             })
           })
         })

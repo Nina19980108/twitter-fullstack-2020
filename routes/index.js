@@ -6,6 +6,8 @@ const adminController = require('../controller/adminController')
 const tweetController = require('../controller/tweetController')
 const apiController = require('../controller/apiController')
 const replyController = require('../controller/replyController')
+const multer = require('multer')
+const upload = multer({ dest: 'temp/' })
 
 const db = require('../models')
 const Followship = db.Followship
@@ -114,4 +116,6 @@ module.exports = (app, passport) => {
   app.put('/users/:userId', authenticated, userController.putUserEdit)
 
   app.get('/api/tweet/:tweetId', authenticated, apiController.getTweet)
+  app.get('/api/users/:userId', authenticated, apiController.getUser)
+  app.post('/api/users/:userId', authenticated, upload.fields([{ name: 'cover', maxCount: 1 }, { name: 'avatar', maxCount: 1 }]), apiController.postUser)
 }
