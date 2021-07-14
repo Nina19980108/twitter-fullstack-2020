@@ -206,7 +206,8 @@ const userController = {
         id: req.params.userId
       }
     }).then(user => {
-      const allowEdit = Number(req.params.userId) === req.user.id
+      // console.log('UUUUUUUUUUUUUUUUU', req.params)
+      // const allowEdit = Number(req.params.userId) === helpers.getUser(req).id
       Followship.findAndCountAll({
         raw: true,
         nest: true,
@@ -233,7 +234,7 @@ const userController = {
               tweets,
               topFollowing,
               isFollowed,
-              allowEdit
+              // allowEdit
             })
           })
         })

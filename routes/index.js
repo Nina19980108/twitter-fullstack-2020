@@ -120,5 +120,5 @@ module.exports = (app, passport) => {
 
   app.get('/api/tweet/:tweetId', authenticated, apiController.getTweet)
   app.get('/api/users/:userId', authenticated, apiController.getUser)
-  app.post('/api/users/:userId', authenticated, upload.fields([{ name: 'cover', maxCount: 1 }, { name: 'avatar', maxCount: 1 }]), apiController.postUser)
+  app.post('/api/users/:userId', authenticated, upload.fields([{ name: 'cover', maxCount: 1 }, { name: 'avatar', maxCount: 1 }]), userController.updateProfile, getTopFollowing, userController.getUserTweets)
 }

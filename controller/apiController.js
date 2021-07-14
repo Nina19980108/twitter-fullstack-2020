@@ -20,17 +20,17 @@ const apiController = {
     }
   },
 
-  getUser: async (req, res) => {
+  getUser: async (req, res, callback) => {
     try {
       const { userId } = req.params
       if (Number(userId) === helpers.getUser(req).id) {
         const user = await User.findByPk(userId, { attributes: ['id', 'cover', 'avatar', 'name', 'introduction'] })
-        return res.json(user.toJSON())
+        return callback(user.toJSON())
       } else {
-        return res.json({ status: 'error' })
+        return callback({ status: 'error' })
       }
     } catch (err) {
-      return res.json({ status: 'error', message: err })
+      return callback({ status: 'error', message: err })
     }
   },
 
@@ -39,9 +39,11 @@ const apiController = {
       const { userId } = req.params
       // permission deny
       if (Number(userId) !== helpers.getUser(req).id) {
+        console.log('Deny')
         return callback({ status: 'error', message: 'invalid user' })
       }
       const { name, introduction } = req.body
+      console.log('UUUUU', req.body)
       const { files } = req
       let cover = ''
       let avatar = ''
