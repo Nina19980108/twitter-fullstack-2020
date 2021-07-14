@@ -657,5 +657,17 @@ const userController = {
           })
       })
   },
+
+  // 接收 /api/users callback 路由
+  updateProfile: (req, res, next) => {
+    apiController.postUser(req, res, (data) => {
+      if (data['status'] === 'error') {
+        req.flash('error_messages', data['message'])
+        next()
+      }
+      req.flash('success_messages', data['message'])
+      next()
+    })
+  }
 }
 module.exports = userController
