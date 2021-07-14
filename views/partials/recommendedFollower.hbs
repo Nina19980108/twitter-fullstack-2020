@@ -21,9 +21,15 @@
       </div>
       {{!-- 數量 --}}
     </div>
+    {{#if this.isFollowed}}
+    <form action="/users/{{ this.id }}/unfollow" method="post" class="mt-2">
+      <button class="btn btn-sm btn-outline-danger">追蹤中</button>
+    </form>
+    {{else}}
     <form action="/users/{{ this.id }}/follow" method="post" class="mt-2">
       <button class="btn btn-sm btn-outline-secondary">追蹤</button>
     </form>
+    {{/if}}
   </div>
   {{/each}}
 

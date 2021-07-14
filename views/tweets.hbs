@@ -30,6 +30,7 @@
     {{!-- 標題 --}}
     <div class="d-flex flex-column">
       <img src="{{ user.cover }}" alt="" srcset="" style="height: 300px;object-fit: cover;">
+
       <div class="d-flex flex-column ms-4">
         <div class="d-flex" style="position: relative;">
           <img src="{{ user.avatar }}" alt="" srcset=""
@@ -40,8 +41,22 @@
               data-bs-toggle="modal" data-bs-target="#profileModal" data-id="{{user.id}}">編輯個人頁面</button></div>
           {{/if}}
         </div>
+      {{!-- 顯示追蹤狀態 --}}
+      <div style="display: flex; flex-direction:row;justify-content:flex-end">
+        {{#if isFollowed}}
+        <form action="/users/{{ user.id }}/unfollow" method="post" class="mt-2">
+          <button class="btn btn-sm btn-outline-danger" style="display:inline-block;border:solid">追蹤中</button>
+        </form>
+        {{else}}
+        <form action="/users/{{ user.id }}/follow" method="post" class="mt-2">
+          <button class="btn btn-sm btn-outline-secondary" style="display:inline-block;">追蹤</button>
+        </form>
+        {{/if}}
+      </div>
+      <div class=" d-flex flex-column ms-4">
 
-        <p class="fs-3 fw-bold mb-0">{{ user.name }}</p>
+        <p class="fs-3 fw-bold mb-0" style="display:inline-block;width:fit-content;">{{ user.name }}</p>
+
         <p style="color: darkseagreen;">{{ user.account }}</p>
         <p>{{ user.introduction }}</p>
 
@@ -57,7 +72,7 @@
         </div>
 
         {{!-- select bar --}}
-        <ul class="nav nav-tabs mb-4 mt-4">
+        <ul class="nav nav-tabs mb-4">
           <li class="nav-item">
             <a class="nav-link fw-bolder" href="/users/{{ user.id }}/tweets"
               style="color: rgb(94, 94, 94);border-bottom: solid 3px darkseagreen">推文</a>
