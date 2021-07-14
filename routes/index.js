@@ -115,7 +115,7 @@ module.exports = (app, passport) => {
 
   app.get('/tweets/:tweetId', authenticated, getTopFollowing, tweetController.getTweet)
   app.post('/tweets/:tweetId/like', authenticated, userController.addLike)
-  app.delete('/tweets/:tweetId', authenticated, userController.removeLike)
+  app.post('/tweets/:tweetId/unlike', authenticated, userController.removeLike)
 
   app.get('/api/tweet/:tweetId', authenticated, apiController.getTweet)
 
