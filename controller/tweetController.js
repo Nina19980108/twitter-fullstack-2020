@@ -9,6 +9,9 @@ const Reply = db.Reply
 const pageLimit = 10
 const tweetController = {
   getTweets: async (req, res) => {
+    if (helpers.getUser(req).role === 'admin') {
+      return res.redirect('/admin/tweets')
+    }
     try {
       if (helpers.getUser(req).role === 'admin') {
         return res.redirect('/admin/tweets')
@@ -139,7 +142,52 @@ const tweetController = {
     } catch (err) {
       return res.redirect('/')
     }
-  }
-}
+  },
 
+  getTweet: async (req, res) => {
+    try {
+      const topFollowing = res.locals.data
+      const { tweetId } = req.params
+      const tweet = await Tweet.findByPk(tweetId, {
+        include: [
+          { model: User, attributes: ['id', 'name', 'account', 'avatar'] }
+        ]
+      })
+      const replies = await Reply.findAndCountAll({
+        raw: true,
+        nest: true,
+        where: { TweetId: tweetId },
+        include: [
+          { model: User, attributes: ['id', 'name', 'account', 'avatar'] }
+        ]
+      })
+      const likes = await Like.findAll({
+        raw: true,
+        nest: true,
+        where: { TweetId: tweet.id },
+        attributes: [
+          [sequelize.fn('count', sequelize.col('id')), 'likeCounts']
+        ]
+      })
+      const likers = await Like.findAll({
+        raw: true,
+        nest: true,
+        where: { TweetId: tweet.id },
+        attributes: ['UserId']
+      })
+      const isLiked = likers.map(d => d.UserId).includes(helpers.getUser(req).id)
+
+      return res.render('singleTweet', {
+        tweet,
+        replyCount: replies.count,
+        reply: replies.rows,
+        likeCount: likes[0].likeCounts,
+        topFollowing, isLiked
+      })
+
+    } catch (err) {
+      console.warn(err)
+    }
+  },
+}
 module.exports = tweetController

@@ -25,7 +25,6 @@
       <p>登出</p>
     </div>
   </div>
-
   <div style="width: 780px;" class="me-5">
     {{!-- 標題 --}}
     <div class="d-flex flex-column">
@@ -40,6 +39,7 @@
               data-bs-toggle="modal" data-bs-target="#profileModal" data-id="{{user.id}}">編輯個人頁面</button></div>
           {{/if}}
         </div>
+
       </div>
       {{!-- 顯示追蹤狀態 --}}
       <div style="display: flex; flex-direction:row;justify-content:flex-end">
@@ -55,10 +55,12 @@
           <button class="btn btn-sm btn-outline-secondary" style="display:inline-block;">追蹤</button>
         </form>
         {{/if}}
+
       </div>
       <div class=" d-flex flex-column ms-4">
 
         <p class="fs-3 fw-bold mb-0" style="display:inline-block;width:fit-content;">{{ user.name }}</p>
+
         <p style="color: darkseagreen;">{{ user.account }}</p>
         <p>{{ user.introduction }}</p>
 

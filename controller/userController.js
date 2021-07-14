@@ -142,6 +142,7 @@ const userController = {
       }
     }).then(user => {
       const allowEdit = Number(req.params.userId) === helpers.getUser(req).id
+
       Followship.findAndCountAll({
         raw: true,
         nest: true,
@@ -161,6 +162,7 @@ const userController = {
             where: { userId: user.id },
           }).then(tweets => {
             const isFollowed = follower.rows.map(f => f.followerId).includes(helpers.getUser(req).id)
+
             return res.render('tweets', {
               user,
               followingCount: following.count,
@@ -175,6 +177,7 @@ const userController = {
       })
     })
   },
+
 
   getUserLikes: async (req, res) => {
     const topFollowing = res.locals.data
@@ -245,7 +248,7 @@ const userController = {
       return res.redirect('/')
     }
   },
-
+    
   getUserFollowings: async (req, res) => {
     const topFollowing = res.locals.data
     const top5Following = topFollowing.slice(0, 5)
@@ -334,36 +337,6 @@ const userController = {
       console.log('getUserFollowers err')
       return res.redirect('/')
     }
-  },
-
-  //MiddleWare
-  getUserInfo: (req, res, next) => {
-    return User.findOne({
-      where: {
-        id: req.params.userId
-      }
-    }).then(user => {
-      Followship.findAndCountAll({
-        raw: true,
-        nest: true,
-        where: { followerId: user.id }
-      }).then(following => {
-        Followship.findAndCountAll({
-          raw: true,
-          nest: true,
-          where: { followingId: user.id },
-        }).then(follower => {
-          res.locals.userInfo = {
-            user: user.dataValues,
-            followings: following.rows,
-            followers: follower.rows,
-            followingCount: following.count,
-            followerCount: follower.count
-          }
-          return next()
-        })
-      })
-    })
   },
 
   //進入帳號設定頁面
@@ -460,6 +433,7 @@ const userController = {
           followingId: userId
         }
       })
+
       return res.redirect('back')
     } catch (err) {
       return res.redirect('back')
@@ -478,4 +452,5 @@ const userController = {
     })
   }
 }
+
 module.exports = userController
