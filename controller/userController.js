@@ -7,6 +7,7 @@ const Followship = db.Followship
 const Reply = db.Reply
 
 const helpers = require('../_helpers')
+const apiController = require('./apiController')
 
 const userController = {
   //註冊頁面
@@ -200,12 +201,12 @@ const userController = {
 
   getUserTweets: (req, res) => {
     const topFollowing = res.locals.data
-    // console.log(topFollowing)
     return User.findOne({
       where: {
         id: req.params.userId
       }
     }).then(user => {
+      const allowEdit = Number(req.params.userId) === req.user.id
       Followship.findAndCountAll({
         raw: true,
         nest: true,
@@ -231,7 +232,8 @@ const userController = {
               followerCount: follower.count,
               tweets,
               topFollowing,
-              isFollowed
+              isFollowed,
+              allowEdit
             })
           })
         })
