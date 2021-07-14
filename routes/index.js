@@ -6,6 +6,8 @@ const adminController = require('../controller/adminController')
 const tweetController = require('../controller/tweetController')
 const apiController = require('../controller/apiController')
 const replyController = require('../controller/replyController')
+const multer = require('multer')
+const upload = multer({ dest: 'temp/' })
 
 const db = require('../models')
 const Followship = db.Followship
@@ -87,6 +89,21 @@ module.exports = (app, passport) => {
 
 
 
+
+
+
+  // 使用者前台
+  app.get('/', authenticated, (req, res) => res.redirect('/tweets'))
+  app.get('/tweets', authenticated, getTopFollowing, tweetController.getTweets)
+  app.post('/tweets', authenticated, getTopFollowing, tweetController.postTweet)
+  app.get('/tweets/:tweetId', authenticated, getTopFollowing, tweetController.getTweet)
+  app.get('/tweets/:tweetId/replies', authenticated, getTopFollowing, tweetController.getTweet)
+  app.post('/tweets/:tweetId/replies', authenticated, getTopFollowing, replyController.postReply)
+  app.get('/tweets/:tweetId', authenticated, getTopFollowing, tweetController.getTweet)
+  app.post('/tweets/:tweetId/like', authenticated, userController.addLike)
+  app.post('/tweets/:tweetId/unlike', authenticated, userController.removeLike)
+
+
   //登入、註冊、登出
   app.get('/signup', userController.signUpPage)
   app.post('/signup', userController.signUp)
@@ -94,30 +111,24 @@ module.exports = (app, passport) => {
   app.post('/signin', passport.authenticate('local', { failureRedirect: '/signin', failureFlash: true }), userController.signIn)
   app.get('/signout', userController.signOut)
 
-  //使用者前台
-  app.get('/', authenticated, (req, res) => res.redirect('/tweets'))
-  app.get('/tweets', authenticated, getTopFollowing, tweetController.getTweets)
-  app.get('/tweets/:tweetId', authenticated, getTopFollowing, tweetController.getTweet)
-  app.get('/tweets/:tweetId/replies', authenticated, getTopFollowing, tweetController.getTweet)
-  app.post('/tweets/:tweetId/replies', authenticated, getTopFollowing, replyController.postReply)
-  app.post('/tweets', authenticated, getTopFollowing, tweetController.postTweet)
+
 
   app.get('/users/:userId/replies', authenticated, getTopFollowing, userController.getUserInfo, userController.getUserReplies)
   app.get('/users/:userId/likes', authenticated, getTopFollowing, userController.getUserInfo, userController.getUserLikes)
   app.get('/users/:userId/tweets', authenticated, getTopFollowing, userController.getUserTweets)
+  app.get('/users/:userId/followings', authenticated, getTopFollowing, userController.getUserInfo, userController.getUserFollowings)
+  app.get('/users/:userId/followers', authenticated, getTopFollowing, userController.getUserInfo, userController.getUserFollowers)
+
   app.post('/users/:userId/unfollow', authenticated, userController.unFollow)
   app.post('/users/:userId/follow', authenticated, userController.follow)
   app.get('/users/:userId/edit', authenticated, userController.getUserEdit)
   app.put('/users/:userId', authenticated, userController.putUserEdit)
-  app.get('/users/:userId/followings', authenticated, getTopFollowing, userController.getUserInfo, userController.getUserFollowings)
-  app.get('/users/:userId/followers', authenticated, getTopFollowing, userController.getUserInfo, userController.getUserFollowers)
 
 
-  app.get('/tweets/:tweetId', authenticated, getTopFollowing, tweetController.getTweet)
-  app.post('/tweets/:tweetId/like', authenticated, userController.addLike)
-  app.post('/tweets/:tweetId/unlike', authenticated, userController.removeLike)
+
 
   app.get('/api/tweet/:tweetId', authenticated, apiController.getTweet)
-
+  app.get('/api/users/:userId', authenticated, apiController.getUser)
+  app.post('/api/users/:userId', authenticated, upload.fields([{ name: 'cover', maxCount: 1 }, { name: 'avatar', maxCount: 1 }]), apiController.postUser)
 
 }
