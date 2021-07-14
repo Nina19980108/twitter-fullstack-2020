@@ -67,7 +67,7 @@ module.exports = (app, passport) => {
   }
   const authenticatedAdmin = (req, res, next) => {
     if (helpers.ensureAuthenticated(req)) {
-      if (helpers.getUser(req).role) {
+      if (helpers.getUser(req).role === 'admin') {
         return next()
       }
       return res.redirect('/')
@@ -80,13 +80,19 @@ module.exports = (app, passport) => {
     return next()
   }
 
+  //管理者
   app.get('/admin/signin', adminController.adminSignInPage)
   app.post('/admin/signin', passport.authenticate('local', { failureRedirect: '/admin/signin', failureFlash: true }), isAdmin, adminController.adminSignIn)
   app.get('/admin/tweets', authenticatedAdmin, isAdmin, adminController.getAdminTweets)
-  app.get('/admin/users', authenticatedAdmin, isAdmin, adminController.getAdminUsers)
   app.delete('/admin/tweets/:tweetId', authenticatedAdmin, isAdmin, getTopFollowing, adminController.deleteAdminTweet)
+  app.get('/admin/users', authenticatedAdmin, isAdmin, adminController.getAdminUsers)
 
-  //前台
+
+
+
+
+
+  // 使用者前台
   app.get('/', authenticated, (req, res) => res.redirect('/tweets'))
   app.get('/tweets', authenticated, getTopFollowing, tweetController.getTweets)
   app.post('/tweets', authenticated, getTopFollowing, tweetController.postTweet)
@@ -95,7 +101,8 @@ module.exports = (app, passport) => {
   app.post('/tweets/:tweetId/replies', authenticated, getTopFollowing, replyController.postReply)
   app.get('/tweets/:tweetId', authenticated, getTopFollowing, tweetController.getTweet)
   app.post('/tweets/:tweetId/like', authenticated, userController.addLike)
-  app.delete('/tweets/:tweetId', authenticated, userController.removeLike)
+  app.post('/tweets/:tweetId/unlike', authenticated, userController.removeLike)
+
 
   //登入、註冊、登出
   app.get('/signup', userController.signUpPage)
@@ -104,18 +111,24 @@ module.exports = (app, passport) => {
   app.post('/signin', passport.authenticate('local', { failureRedirect: '/signin', failureFlash: true }), userController.signIn)
   app.get('/signout', userController.signOut)
 
-  //使用者相關
+
+
   app.get('/users/:userId/replies', authenticated, getTopFollowing, userController.getUserInfo, userController.getUserReplies)
   app.get('/users/:userId/likes', authenticated, getTopFollowing, userController.getUserInfo, userController.getUserLikes)
   app.get('/users/:userId/tweets', authenticated, getTopFollowing, userController.getUserTweets)
   app.get('/users/:userId/followings', authenticated, getTopFollowing, userController.getUserInfo, userController.getUserFollowings)
   app.get('/users/:userId/followers', authenticated, getTopFollowing, userController.getUserInfo, userController.getUserFollowers)
+
   app.post('/users/:userId/unfollow', authenticated, userController.unFollow)
   app.post('/users/:userId/follow', authenticated, userController.follow)
   app.get('/users/:userId/edit', authenticated, userController.getUserEdit)
   app.put('/users/:userId', authenticated, userController.putUserEdit)
 
+
+
+
   app.get('/api/tweet/:tweetId', authenticated, apiController.getTweet)
   app.get('/api/users/:userId', authenticated, apiController.getUser)
   app.post('/api/users/:userId', authenticated, upload.fields([{ name: 'cover', maxCount: 1 }, { name: 'avatar', maxCount: 1 }]), apiController.postUser)
+
 }

@@ -16,7 +16,7 @@ const userController = {
 
   //註冊
   signUp: (req, res) => {
-    if (req.body.passwordCheck !== req.body.password) {
+    if (req.body.checkPassword !== req.body.password) {
       req.flash('error_messages', '兩次密碼輸入不同！')
       return res.redirect('/signup')
     } else {
@@ -194,12 +194,13 @@ const userController = {
     }
     catch (err) {
       console.log('getUserLikes err')
-      return res.render('/')
+      return res.redirect('/')
     }
   },
 
   getUserTweets: (req, res) => {
     const topFollowing = res.locals.data
+
     return User.findOne({
       where: {
         id: req.params.userId
@@ -226,6 +227,7 @@ const userController = {
             where: { userId: user.id },
           }).then(tweets => {
             const isFollowed = follower.rows.map(f => f.followerId).includes(helpers.getUser(req).id)
+
             return res.render('tweets', {
               user,
               followingCount: following.count,
@@ -239,150 +241,6 @@ const userController = {
         })
       })
     })
-  },
-
-  getUserReplies: async (req, res) => {
-    const topFollowing = res.locals.data
-    const top5Following = topFollowing.slice(0, 5)
-    const userInfo = res.locals.userInfo
-    try {
-      const replies = await Reply.findAll({
-        raw: true,
-        nest: true,
-        where: {
-          UserId: userInfo.user.id
-        },
-        include: [Tweet]
-      })
-
-      let Data = []
-      Data = replies.map(async (reply, index) => {
-        if (reply.Tweet.UserId) {
-          const [tweetUser, likes, replies] = await Promise.all([
-            User.findOne({
-              raw: true,
-              nest: true,
-              where: {
-                id: Number(reply.Tweet.UserId)
-              }
-            }),
-            Like.findAndCountAll({
-              raw: true,
-              nest: true,
-              where: {
-                TweetId: reply.TweetId
-              }
-            }),
-            Reply.findAndCountAll({
-              raw: true,
-              nest: true,
-              where: {
-                TweetId: reply.TweetId
-              }
-            })
-          ])
-          return {
-            id: reply.id,
-            createdAt: reply.createdAt,
-            comment: reply.comment,
-            TweetId: reply.TweetId,
-            tweetDescription: reply.Tweet.description,
-            tweetCreatedAt: reply.Tweet.createdAt,
-            tweetUserId: tweetUser.id,
-            tweetUserName: tweetUser.name,
-            tweetUserAvatar: tweetUser.avatar,
-            tweetUserAccount: tweetUser.account,
-            likeCount: likes.count,
-            replyCount: replies.count,
-          }
-        }
-      })
-      Promise.all(Data).then(data => {
-        // console.log(data)
-        data = data.sort((a, b) => a.tweetCreatedAt - b.tweetCreatedAt)
-        return res.render('replies', {
-          user: userInfo.user,
-          followingCount: userInfo.followingCount,
-          followerCount: userInfo.followerCount,
-          replies: data,
-          topFollowing: top5Following
-        })
-      })
-    }
-    catch (err) {
-      console.log('getUserReplies err')
-      return res.render('/')
-    }
-  },
-
-  getUserLikes: async (req, res) => {
-    const topFollowing = res.locals.data
-    const top5Following = topFollowing.slice(0, 5)
-    const userInfo = res.locals.userInfo
-    try {
-      //所有的like清單裡面屬於userInfo.user.id的
-      const likes = await Like.findAll({
-        raw: true,
-        nest: true,
-        where: {
-          UserId: userInfo.user.id
-        },
-        //撈出userInfo.user.id關聯的推文
-        include: [Tweet]
-      })
-
-      let Data = []
-      //userInfo.user.id的like做資料陣列處理（已經撈到關聯推文）
-      Data = likes.map(async (like, index) => {
-        //從資料庫裡面查找userInfo.user.id的like, 其user, tweet, reply關聯資料
-        const [tweetUser, likes, replies] = await Promise.all([
-          User.findOne({
-            raw: true,
-            nest: true,
-            where: {
-              //關聯推文資料的UserId
-              id: like.Tweet.UserId
-            }
-          }),
-          Like.findAndCountAll({
-            raw: true,
-            nest: true,
-            where: {
-              //Like資料有關聯TweetId，而與user.id有關的TweetId，可以用來對應Like資料庫裡，有多少相同的TweetId，表示有多少人喜歡的數字
-              TweetId: like.TweetId
-            }
-          }),
-          Reply.findAndCountAll({
-            raw: true,
-            nest: true,
-            where: {
-              TweetId: like.TweetId
-            }
-          })
-        ])
-        return {
-          id: like.id,
-          tweetUser: tweetUser,
-          likeCount: likes.count,
-          replyCount: replies.count,
-          tweet: like.Tweet
-        }
-      })
-      Promise.all(Data).then(data => {
-        data = data.sort((a, b) => a.tweet.createdAt - b.tweet.createdAt)
-        return res.render('likes', {
-          user: userInfo.user,
-          followingCount: userInfo.followingCount,
-          followerCount: userInfo.followerCount,
-          likes: data,
-          topFollowing: top5Following
-        })
-      })
-    }
-    catch (err) {
-      console.log('getUserLikes err')
-      return res.redirect('/')
-    }
   },
 
   getUserFollowings: async (req, res) => {
@@ -475,36 +333,6 @@ const userController = {
     }
   },
 
-  //MiddleWare
-  getUserInfo: (req, res, next) => {
-    return User.findOne({
-      where: {
-        id: req.params.userId
-      }
-    }).then(user => {
-      Followship.findAndCountAll({
-        raw: true,
-        nest: true,
-        where: { followerId: user.id }
-      }).then(following => {
-        Followship.findAndCountAll({
-          raw: true,
-          nest: true,
-          where: { followingId: user.id },
-        }).then(follower => {
-          res.locals.userInfo = {
-            user: user.dataValues,
-            followings: following.rows,
-            followers: follower.rows,
-            followingCount: following.count,
-            followerCount: follower.count
-          }
-          return next()
-        })
-      })
-    })
-  },
-
   //進入帳號設定頁面
   getUserEdit: (req, res) => {
     return User.findByPk(req.params.userId)
@@ -586,6 +414,7 @@ const userController = {
           followingId: req.params.userId
         }
       })
+
       return res.redirect('back')
 
     } catch (err) {
@@ -651,4 +480,5 @@ const userController = {
       })
   },
 }
+
 module.exports = userController
