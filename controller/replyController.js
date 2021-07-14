@@ -8,8 +8,7 @@ const replyController = {
     try {
       const { comment } = req.body
       const { tweetId } = req.params
-      console.log(comment)
-      console.log(tweetId)
+
       if (comment === '') {
         return res.redirect('/')
       }

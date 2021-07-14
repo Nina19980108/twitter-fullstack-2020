@@ -10,6 +10,10 @@ const pageLimit = 10
 const tweetController = {
   getTweets: async (req, res) => {
     try {
+      if (helpers.getUser(req).role === 'admin') {
+        return res.redirect('/admin/tweets')
+      }
+
       const topFollowing = res.locals.data
       const user = {
         id: helpers.getUser(req).id,
@@ -67,8 +71,7 @@ const tweetController = {
         })
       })
     } catch (err) {
-      console.warn(err)
-      // return res.redirect('/') // 假定回到首頁
+      return res.redirect('/')
     }
   },
 
@@ -114,7 +117,7 @@ const tweetController = {
       })
 
     } catch (err) {
-      console.warn(err)
+      return res.redirect('/')
     }
   },
 
@@ -134,7 +137,7 @@ const tweetController = {
       })
       return res.redirect('/')
     } catch (err) {
-      console.warn(err)
+      return res.redirect('/')
     }
   }
 }

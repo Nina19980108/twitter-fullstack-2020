@@ -6,6 +6,8 @@ const adminController = require('../controller/adminController')
 const tweetController = require('../controller/tweetController')
 const apiController = require('../controller/apiController')
 const replyController = require('../controller/replyController')
+const multer = require('multer')
+const upload = multer({ dest: 'temp/' })
 
 const db = require('../models')
 const Followship = db.Followship
@@ -16,6 +18,9 @@ const getTopFollowing = async (req, res, next) => {
     const users = await User.findAll({
       raw: true,
       nest: true,
+      where: {
+        role: 'user'
+      }
     })
 
     let Data = []
@@ -65,7 +70,7 @@ module.exports = (app, passport) => {
   }
   const authenticatedAdmin = (req, res, next) => {
     if (helpers.ensureAuthenticated(req)) {
-      if (helpers.getUser(req).role) {
+      if (helpers.getUser(req).role === 'admin') {
         return next()
       }
       return res.redirect('/')
@@ -108,8 +113,8 @@ module.exports = (app, passport) => {
   app.get('/users/:userId/tweets', authenticated, getTopFollowing, userController.getUserTweets)
   app.get('/users/:userId/followings', authenticated, getTopFollowing, userController.getUserInfo, userController.getUserFollowings)
   app.get('/users/:userId/followers', authenticated, getTopFollowing, userController.getUserInfo, userController.getUserFollowers)
-  app.post('/users/:userId/unfollow', authenticated, userController.unFollow)
-  app.post('/users/:userId/follow', authenticated, userController.follow)
+  app.post('/followships', authenticated, userController.follow) // check
+  app.delete('/followships/:userId', authenticated, userController.unFollow)     // check
   app.get('/users/:userId/edit', authenticated, userController.getUserEdit)
   app.put('/users/:userId', authenticated, userController.putUserEdit)
 

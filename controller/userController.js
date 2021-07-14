@@ -16,7 +16,7 @@ const userController = {
 
   //註冊
   signUp: (req, res) => {
-    if (req.body.passwordCheck !== req.body.password) {
+    if (req.body.checkPassword !== req.body.password) {
       req.flash('error_messages', '兩次密碼輸入不同！')
       return res.redirect('/signup')
     } else {
@@ -194,7 +194,7 @@ const userController = {
     }
     catch (err) {
       console.log('getUserLikes err')
-      return res.render('/')
+      return res.redirect('/')
     }
   },
 
@@ -565,29 +565,38 @@ const userController = {
   },
 
   //追蹤使用者
-  follow: (req, res) => {
-    return Followship.create({
-      followerId: helpers.getUser(req).id,
-      followingId: req.params.userId
-    })
-      .then((followship) => {
-        return res.redirect('back')
+  follow: async (req, res) => {
+    try {
+      const { id } = req.body
+      if (Number(id) === helpers.getUser(req).id) {
+        return res.json({ status: 'error' })
+      }
+      await Followship.create({
+        followerId: helpers.getUser(req).id,
+        followingId: id
       })
+      return res.redirect('back')
+    } catch (err) {
+      return res.redirect('back')
+    }
   },
 
   //取消追蹤使用者
   unFollow: async (req, res) => {
     try {
+      const { userId } = req.params
+      if (Number(userId) === helpers.getUser(req).id) {
+        return res.redirect('back')
+      }
       await Followship.destroy({
         where: {
           followerId: helpers.getUser(req).id,
-          followingId: req.params.userId
+          followingId: userId
         }
       })
       return res.redirect('back')
-
     } catch (err) {
-      console.warn(err)
+      return res.redirect('back')
     }
   },
 
