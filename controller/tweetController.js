@@ -98,7 +98,7 @@ const tweetController = {
       const likes = await Like.findAll({
         raw: true,
         nest: true,
-        where: { TweetId: tweet.id },
+        where: { TweetId: tweetId },
         attributes: [
           [sequelize.fn('count', sequelize.col('id')), 'likeCounts']
         ]
@@ -106,7 +106,7 @@ const tweetController = {
       const likers = await Like.findAll({
         raw: true,
         nest: true,
-        where: { TweetId: tweet.id },
+        where: { TweetId: tweetId },
         attributes: ['UserId']
       })
       const isLiked = likers.map(d => d.UserId).includes(helpers.getUser(req).id)
