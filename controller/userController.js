@@ -248,7 +248,7 @@ const userController = {
       return res.redirect('/')
     }
   },
-    
+
   getUserFollowings: async (req, res) => {
     const topFollowing = res.locals.data
     const top5Following = topFollowing.slice(0, 5)
@@ -450,7 +450,36 @@ const userController = {
       req.flash('success_messages', data['message'])
       next()
     })
-  }
+  },
+  //MiddleWare
+  getUserInfo: (req, res, next) => {
+    return User.findOne({
+      where: {
+        id: req.params.userId
+      }
+    }).then(user => {
+      Followship.findAndCountAll({
+        raw: true,
+        nest: true,
+        where: { followerId: user.id }
+      }).then(following => {
+        Followship.findAndCountAll({
+          raw: true,
+          nest: true,
+          where: { followingId: user.id },
+        }).then(follower => {
+          res.locals.userInfo = {
+            user: user.dataValues,
+            followings: following.rows,
+            followers: follower.rows,
+            followingCount: following.count,
+            followerCount: follower.count
+          }
+          return next()
+        })
+      })
+    })
+  },
 }
 
 module.exports = userController

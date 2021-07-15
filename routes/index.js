@@ -1,5 +1,3 @@
-// const express = require('express')
-// const router = express.Router()
 const helpers = require('../_helpers')
 const userController = require('../controller/userController')
 const adminController = require('../controller/adminController')
