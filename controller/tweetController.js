@@ -13,6 +13,10 @@ const tweetController = {
       return res.redirect('/admin/tweets')
     }
     try {
+      if (helpers.getUser(req).role === 'admin') {
+        return res.redirect('/admin/tweets')
+      }
+
       const topFollowing = res.locals.data
       const user = {
         id: helpers.getUser(req).id,
@@ -70,8 +74,7 @@ const tweetController = {
         })
       })
     } catch (err) {
-      console.warn(err)
-      // return res.redirect('/') // 假定回到首頁
+      return res.redirect('/')
     }
   },
 
@@ -117,7 +120,7 @@ const tweetController = {
       })
 
     } catch (err) {
-      console.warn(err)
+      return res.redirect('/')
     }
   },
 
@@ -127,6 +130,9 @@ const tweetController = {
       if (description === '') {
         return res.redirect('/')
       }
+      if (description.length > 140) {
+        return res.redirect('/')
+      }
 
       await Tweet.create({
         description: description,
@@ -134,7 +140,7 @@ const tweetController = {
       })
       return res.redirect('/')
     } catch (err) {
-      console.warn(err)
+      return res.redirect('/')
     }
   },
 

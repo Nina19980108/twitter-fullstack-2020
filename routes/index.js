@@ -18,6 +18,9 @@ const getTopFollowing = async (req, res, next) => {
     const users = await User.findAll({
       raw: true,
       nest: true,
+      where: {
+        role: 'user'
+      }
     })
 
     let Data = []
@@ -76,7 +79,7 @@ module.exports = (app, passport) => {
   }
   //如果登入的人是管理者，並且只用在管理者登入的路由
   const isAdmin = (req, res, next) => {
-    res.locals.isAdmin = req.user.role === 'admin'
+    res.locals.isAdmin = helpers.getUser(req).role === 'admin'
     return next()
   }
 
@@ -86,11 +89,6 @@ module.exports = (app, passport) => {
   app.get('/admin/tweets', authenticatedAdmin, isAdmin, adminController.getAdminTweets)
   app.delete('/admin/tweets/:tweetId', authenticatedAdmin, isAdmin, getTopFollowing, adminController.deleteAdminTweet)
   app.get('/admin/users', authenticatedAdmin, isAdmin, adminController.getAdminUsers)
-
-
-
-
-
 
   // 使用者前台
   app.get('/', authenticated, (req, res) => res.redirect('/tweets'))
@@ -102,7 +100,6 @@ module.exports = (app, passport) => {
   app.get('/tweets/:tweetId', authenticated, getTopFollowing, tweetController.getTweet)
   app.post('/tweets/:tweetId/like', authenticated, userController.addLike)
   app.post('/tweets/:tweetId/unlike', authenticated, userController.removeLike)
-
 
   //登入、註冊、登出
   app.get('/signup', userController.signUpPage)
@@ -119,8 +116,9 @@ module.exports = (app, passport) => {
   app.get('/users/:userId/followings', authenticated, getTopFollowing, userController.getUserInfo, userController.getUserFollowings)
   app.get('/users/:userId/followers', authenticated, getTopFollowing, userController.getUserInfo, userController.getUserFollowers)
 
-  app.post('/users/:userId/unfollow', authenticated, userController.unFollow)
-  app.post('/users/:userId/follow', authenticated, userController.follow)
+  app.post('/followships', authenticated, userController.follow)
+  app.delete('/followships/:userId', authenticated, userController.unFollow)
+
   app.get('/users/:userId/edit', authenticated, userController.getUserEdit)
   app.put('/users/:userId', authenticated, userController.putUserEdit)
 
@@ -129,6 +127,6 @@ module.exports = (app, passport) => {
 
   app.get('/api/tweet/:tweetId', authenticated, apiController.getTweet)
   app.get('/api/users/:userId', authenticated, apiController.getUser)
-  app.post('/api/users/:userId', authenticated, upload.fields([{ name: 'cover', maxCount: 1 }, { name: 'avatar', maxCount: 1 }]), apiController.postUser)
+  app.post('/api/users/:userId', authenticated, upload.fields([{ name: 'cover', maxCount: 1 }, { name: 'avatar', maxCount: 1 }]), userController.updateProfile, getTopFollowing, userController.getUserTweets)
 
 }
