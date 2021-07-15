@@ -62,6 +62,61 @@ const adminController = {
     })
   },
 
+  // getAdminUsers: async (req, res) => {
+  //   try {
+  //     const users = await User.findAndCountAll({
+  //       raw: true,
+  //       nest: true,
+  //     })
+
+  //     let Data = []
+  //     Data = users.rows.map(async (user, index) => {
+  //       const [like, following, follower, reply] = await Promise.all([
+  //         Like.findAndCountAll({
+  //           raw: true,
+  //           nest: true,
+  //           where: { userId: user.id },
+  //         }),
+  //         Followship.findAndCountAll({
+  //           raw: true,
+  //           nest: true,
+  //           where: { followerId: user.id },
+  //         }),
+  //         Followship.findAndCountAll({
+  //           raw: true,
+  //           nest: true,
+  //           where: { followingId: user.id },
+  //         }),
+  //         Reply.findAndCountAll({
+  //           raw: true,
+  //           nest: true,
+  //           where: { UserId: user.id },
+  //         })
+  //       ])
+  //       return {
+  //         id: user.id,
+  //         name: user.name,
+  //         avatar: user.avatar,
+  //         account: user.account,
+  //         cover: user.cover,
+  //         like: like,
+  //         following: following,
+  //         follower: follower,
+  //         reply: reply
+  //       }
+  //     })
+  //     Promise.all(Data).then(data => {
+  //       return res.render('admin/users', { data })
+  //     })
+
+  //   }
+
+  //   catch (err) {
+  //     req.flash('error_message', err)
+  //     return res.redirect('/') // 假定回到首頁
+  //   }
+  // }
+
   getAdminUsers: async (req, res) => {
     try {
       const users = await User.findAndCountAll({
@@ -71,12 +126,7 @@ const adminController = {
 
       let Data = []
       Data = users.rows.map(async (user, index) => {
-        const [like, following, follower, reply] = await Promise.all([
-          Like.findAndCountAll({
-            raw: true,
-            nest: true,
-            where: { userId: user.id },
-          }),
+        const [following, follower, tweet] = await Promise.all([
           Followship.findAndCountAll({
             raw: true,
             nest: true,
@@ -87,22 +137,35 @@ const adminController = {
             nest: true,
             where: { followingId: user.id },
           }),
-          Reply.findAndCountAll({
+          Tweet.findAndCountAll({
             raw: true,
             nest: true,
             where: { UserId: user.id },
           })
         ])
+        // 拉出 每則貼文 Like 資料
+        let tweetLike = tweet.rows.map(async (tw, index) => {
+          const like = await Like.findAndCountAll({
+            raw: true,
+            nest: true,
+            where: { tweetId: tw.id }
+          })
+          return like.count
+        })
+        // 取得 Like 陣列
+        tweetLike = await Promise.all(tweetLike)
+        // 累加 Like 陣列, 空陣列回傳 0, 下面的 like 直接是 所有該使用者推文的 like 累加數量
+        const like = tweetLike.length > 0 ? tweetLike.reduce((a, b) => a + b) : 0
         return {
           id: user.id,
           name: user.name,
           avatar: user.avatar,
           account: user.account,
           cover: user.cover,
-          like: like,
           following: following,
           follower: follower,
-          reply: reply
+          reply: tweet,
+          like: like
         }
       })
       Promise.all(Data).then(data => {
