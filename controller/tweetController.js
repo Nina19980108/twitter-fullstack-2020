@@ -164,7 +164,7 @@ const tweetController = {
       const likes = await Like.findAll({
         raw: true,
         nest: true,
-        where: { TweetId: tweet.id },
+        where: { TweetId: tweetId },
         attributes: [
           [sequelize.fn('count', sequelize.col('id')), 'likeCounts']
         ]
