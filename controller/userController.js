@@ -159,7 +159,7 @@ const userController = {
             raw: true,
             nest: true,
             //使用者發的所有推文
-            where: { userId: user.id },
+            where: { UserId: user.id },
           }).then(tweets => {
             const isFollowed = follower.rows.map(f => f.followerId).includes(helpers.getUser(req).id)
 
