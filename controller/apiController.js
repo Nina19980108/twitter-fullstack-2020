@@ -121,6 +121,6 @@ const apiController = {
     } catch (err) {
       return callback({ status: 'error', message: err })
     }
-  }
+  },
 }
 module.exports = apiController
