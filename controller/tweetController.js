@@ -172,7 +172,7 @@ const tweetController = {
       const likers = await Like.findAll({
         raw: true,
         nest: true,
-        where: { TweetId: tweet.id },
+        where: { TweetId: tweetId },
         attributes: ['UserId']
       })
       const isLiked = likers.map(d => d.UserId).includes(helpers.getUser(req).id)
