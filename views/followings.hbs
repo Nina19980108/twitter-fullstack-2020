@@ -68,7 +68,12 @@
         </div>
         {{!-- 數量 --}}
       </div>
-      <form action="/users/{{ this.followingUser.id }}/follow" method="post" class="ms-4">
+      <form action="/followships" method="post" class="ms-4" {{#ifCond user.id this.id}}style="display: none;"
+        {{/ifCond}}>
+        {{!-- add hidden input --}}
+        <label>
+          <input type="number" name="id" id="followInput" style="display: none;" value="{{this.id}}">
+        </label>
         <button class="btn btn-sm btn-outline-secondary" style="width: 60px;">追蹤</button>
       </form>
     </div>
