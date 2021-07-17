@@ -15,7 +15,7 @@ const tweetController = {
       if (helpers.getUser(req).role === 'admin') {
         return res.redirect('/admin/tweets')
       }
-      const shareModal = true
+
       const topFollowing = res.locals.data
       const user = {
         id: helpers.getUser(req).id,
@@ -58,8 +58,7 @@ const tweetController = {
           data,
           user,
           topFollowing,
-          tweetsPage,
-          shareModal
+          tweetsPage
         })
       })
     } catch (err) {
@@ -70,8 +69,6 @@ const tweetController = {
   getTweet: async (req, res) => {
     try {
       const topFollowing = res.locals.data
-      const shareModal = true
-      const commentModal = true
       const { tweetId } = req.params
       const tweet = await Tweet.findByPk(tweetId, {
         include: [
@@ -89,7 +86,7 @@ const tweetController = {
       const likes = await Like.findAll({
         raw: true,
         nest: true,
-        where: { TweetId: tweet.id },
+        where: { TweetId: tweetId },
         attributes: [
           [sequelize.fn('count', sequelize.col('id')), 'likeCounts']
         ]
@@ -97,7 +94,7 @@ const tweetController = {
       const likers = await Like.findAll({
         raw: true,
         nest: true,
-        where: { TweetId: tweet.id },
+        where: { TweetId: tweetId },
         attributes: ['UserId']
       })
       const isLiked = likers.map(d => d.UserId).includes(helpers.getUser(req).id)
@@ -108,9 +105,7 @@ const tweetController = {
         reply: replies.rows,
         likeCount: likes[0].likeCounts,
         topFollowing,
-        isLiked,
-        shareModal,
-        commentModal
+        isLiked
       })
 
     } catch (err) {
