@@ -10,9 +10,15 @@ const session = require('express-session')
 const helpers = require('./_helpers');
 const passport = require('./config/passport')
 const db = require('./models') // 引入資料庫
+const socketio = require('socket.io')
+
 
 const app = express()
-const port = process.env.PORT
+const port = process.env.PORT || 3000
+const http = require('http');
+const server = http.createServer(app);
+const { Server } = require("socket.io");
+const io = new Server(server);
 
 app.engine('hbs', exphbs({
   defaultLayout: 'main',
@@ -35,9 +41,12 @@ app.use((req, res, next) => {
   next()
 })
 
-console.log(port)
-app.listen(Number(port), () => {
-  console.log(`Example app listening at http://localhost:3000`)
+io.on('connection', (socket) => {
+  console.log('a user connected');
+});
+
+server.listen(Number(port), () => {
+  console.log(`Example server listening at http://localhost:3000`)
 })
 require('./routes')(app, passport)
 
