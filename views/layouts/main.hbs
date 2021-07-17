@@ -414,6 +414,16 @@
       <script src="/socket.io/socket.io.js"></script>
       <script>
         var socket = io();
+        // 發送一個 "sendMessage" 事件
+        socket.emit("sendMessage", {
+          name: "majer",
+          message: "hello everyone"
+        })
+        // 監聽來自 server 的 "allMessage" 事件
+        socket.on("allMessage", function (message) {
+          console.log('客戶端接受到server的訊息：')
+          console.log(message)
+        })
       </script>
   </body>
 

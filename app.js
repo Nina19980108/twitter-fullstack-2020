@@ -42,7 +42,17 @@ app.use((req, res, next) => {
 })
 
 io.on('connection', (socket) => {
+
   console.log('a user connected');
+
+  // 建立一個 "sendMessage" 的監聽
+  socket.on("sendMessage", function (message) {
+    console.log('server接收到客戶端的訊息：')
+    console.log(message)
+    // 當收到事件的時候，也發送一個 "allMessage" 事件給所有的連線用戶
+    io.emit("allMessage", message)
+  })
+
 });
 
 server.listen(Number(port), () => {
