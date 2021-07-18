@@ -44,7 +44,7 @@ socket.on('chat message', data => {
     // 屬於自己的留言
     // DOM: 留言右半 HTML
     console.log('我的')
-    let htmlContent = `<div class="d-flex mb-3">
+    let htmlContent = `<div class="d-flex mb-3 flex-row-reverse">
         <a href="/users/${data.id}/tweets" style="">
           <img src="${data.avatar}"
             onerror="javascript:this.src='https://mir-s3-cdn-cf.behance.net/project_modules/1400_opt_1/37a04795636919.5ff053424df01.jpg';"
