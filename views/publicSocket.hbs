@@ -4,7 +4,7 @@
       style="overflow: scroll;padding:2em;background-color:white;text-decoration:none;border-radius: 1em;width:54.1vw;height:72vh;box-shadow:0 0 8px 3px #ccccccb3;">
 
       {{#each dataMsg}}
-      <div class="d-flex mb-3">
+      <div class="d-flex mb-3 {{#if isCurrent}}flex-row-reverse{{/if}}">
         {{!-- avatar --}}
         <a href="/users/{{ this.User.id }}/tweets" style="">
           <img src="{{ this.User.avatar }}"
@@ -17,7 +17,8 @@
             <p class="fs-5 me-3 mb-0"><strong>{{ this.User.name }}</strong></p>
             <p class="mb-0" style="color: #313c4b84;margin-top:0.1em;">@account</p>
             {{!-- moment --}}
-            <p class="mb-0" style="color: #313c4b84;margin:0.42em 0 0 0.5em;font-size:smaller"> ・3秒前</p>
+            <p class="mb-0" style="color: #313c4b84;margin:0.42em 0 0 0.5em;font-size:smaller"> {{momentCH
+              this.createdAt}}</p>
           </div>
           {{!-- message --}}
           <p class="mt-1" style="font-size: small;">
