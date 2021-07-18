@@ -241,14 +241,13 @@
                     style="border-radius: 0.7em;height: 15vh;width: 15vh;margin-left:0.7em;object-fit: cover;">
                 </a>
                 {{!-- account --}}
-                {{!-- 聊天室輸入區 --}}
-                <form id="form" action="" method="post" class="d-flex align-items-center">
+                <form id="socketForm" data-id="{{ user.id }}" class="d-flex align-items-center">
                   <div style="color:#313c4b;width:31vw" class="">
                     <div class="d-flex">
                       <p class="fs-5 me-3 mb-0"><strong>{{ user.name }}</strong></p>
                       <p class="mb-0" style="color: #313c4b84;margin-top:0.2em;">{{ user.account }}</p>
                     </div>
-                    <textarea name="description" id="textarea" cols="30" rows="8" placeholder="Share Something..."
+                    <textarea name="socketMsg" id="socketMsg" cols="30" rows="8" placeholder="Share Something..."
                       style="height:10vh;width:30vw;border:none;resize:none;outline:none;" required></textarea>
                   </div>
 
@@ -360,7 +359,6 @@
       <div class="modal-dialog">
         <div class="modal-content"
           style="width:60vw;height:85vh;border-radius: 2em;border: none;background-color: rgb(255, 255, 255);margin-left:-8em">
-
           <img class="mb-3" src="https://cdn.dribbble.com/users/851350/screenshots/6390413/dusk.png"
             onerror="javascript:this.src='https://mir-s3-cdn-cf.behance.net/project_modules/1400_opt_1/37a04795636919.5ff053424df01.jpg';"
             style="width:60vw;height:30vh;object-fit: cover;border-radius: 2em;">
@@ -387,7 +385,6 @@
 
             </form>
           </div>
-
         </div>
       </div>
     </div>
@@ -465,7 +462,6 @@
         </div>
       </div>
 
-
       {{!-- jquery --}}
       <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
         integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
@@ -481,49 +477,8 @@
         integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
         crossorigin="anonymous"></script>
 
-      <script src="/socket.io/socket.io.js"></script>
-      <script>
-        const socket = io();
-        let messages = document.getElementById('messages');
-        let form = document.getElementById('form');
-        let textarea = document.getElementById('textarea');
-
-        form.addEventListener('submit', function (e) {
-          e.preventDefault();
-          if (textarea.value) {
-            socket.emit('chat message', textarea.value);
-            textarea.value = '';
-          }
-        });
-        // 監聽來自 server 的 "allMessage" 事件
-        socket.on('chat message', function (msg) {
-          console.log('客戶端接受到server的訊息：')
-          console.log(msg)
-          let newItem = document.createElement('div')
-          newItem.innerHTML = `
-          <div class="d-flex mb-3">
-        <a href="/users/{{ this.User.id }}/tweets" style="">
-          <img src="{{ this.User.avatar }}"
-            onerror="javascript:this.src='https://mir-s3-cdn-cf.behance.net/project_modules/1400_opt_1/37a04795636919.5ff053424df01.jpg';"
-            style="border:1px solid;border-radius: 0.7em;height: 10vh;width: 10vh;object-fit: cover;">
-        </a>
-        <div style="color:#313c4b" class="ms-4">
-          <div class="d-flex">
-            <p class="fs-5 me-3 mb-0"><strong>Name</strong></p>
-            <p class="mb-0" style="color: #313c4b84;margin-top:0.1em;">@account</p>
-            <p class="mb-0" style="color: #313c4b84;margin:0.42em 0 0 0.5em;font-size:smaller"> ・3秒前</p>
-          </div>
-          <p class="mt-1" style="font-size: small;">
-            ${msg}
-          </p>
-        </div>
-      </div>
-          `
-          messages.appendChild(newItem)
-          window.scrollTo(0, document.body.scrollHeight);
-        });
-
-      </script>
+      {{!-- script --}}
+      <script src="/javascripts/script.js"></script>
   </body>
 
 </html>
