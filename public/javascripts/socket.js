@@ -1,6 +1,7 @@
 const socket = io()     // 建立 socket 通道
 const socketForm = document.getElementById('socketForm')  // layouts/main.hbs 的 textarea id
 const socketMsg = document.getElementById('socketMsg')    // layouts/main.hbs 的 Form id
+let messages = document.getElementById('messages');
 const onlineUsers = []  // 儲存上線使用者人數之陣列
 
 // 當前上線人數
@@ -38,10 +39,31 @@ socketForm.addEventListener('submit', event => {
 socket.on('chat message', data => {
   console.log(socketForm.dataset.id)
   console.log('留言資訊', data)
+  let item = document.createElement('div')
   if (Number(socketForm.dataset.id) === data.id) {
     // 屬於自己的留言
     // DOM: 留言右半 HTML
     console.log('我的')
+    let htmlContent = `<div class="d-flex mb-3">
+        <a href="/users/${data.id}/tweets" style="">
+          <img src="${data.avatar}"
+            onerror="javascript:this.src='https://mir-s3-cdn-cf.behance.net/project_modules/1400_opt_1/37a04795636919.5ff053424df01.jpg';"
+            style="border:1px solid;border-radius: 0.7em;height: 10vh;width: 10vh;object-fit: cover;">
+        </a>
+        <div style="color:#313c4b" class="ms-4">
+          <div class="d-flex">
+            <p class="fs-5 me-3 mb-0"><strong>${data.name}</strong></p>
+            <p class="mb-0" style="color: #313c4b84;margin-top:0.1em;">@account</p>
+            <p class="mb-0" style="color: #313c4b84;margin:0.42em 0 0 0.5em;font-size:smaller"> ・3秒前</p>
+          </div>
+          <p class="mt-1" style="font-size: small;">
+            ${data.msg}
+          </p>
+        </div>
+      </div>
+    `
+    item.innerHTML = htmlContent;
+    messages.appendChild(item);
   } else {
     // 屬於別人的留言
     // DOM: 留言左半 HTML

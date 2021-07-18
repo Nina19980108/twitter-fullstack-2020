@@ -240,16 +240,24 @@
                     onerror="javascript:this.src='https://mir-s3-cdn-cf.behance.net/project_modules/1400_opt_1/37a04795636919.5ff053424df01.jpg';"
                     style="border-radius: 0.7em;height: 15vh;width: 15vh;margin-left:0.7em;object-fit: cover;">
                 </a>
-                {{!-- account --}}
+
+
+
+                {{!-- account聊天室回覆區 --}}
                 <form id="socketForm" data-id="{{ user.id }}" class="d-flex align-items-center">
                   <div style="color:#313c4b;width:31vw" class="">
                     <div class="d-flex">
                       <p class="fs-5 me-3 mb-0"><strong>{{ user.name }}</strong></p>
                       <p class="mb-0" style="color: #313c4b84;margin-top:0.2em;">{{ user.account }}</p>
                     </div>
+                    {{!-- 聊天室輸入匡 --}}
                     <textarea name="socketMsg" id="socketMsg" cols="30" rows="8" placeholder="Share Something..."
                       style="height:10vh;width:30vw;border:none;resize:none;outline:none;" required></textarea>
                   </div>
+
+
+
+
 
                   {{!-- share btn --}}
                   <button type="submit" class="post-a-tweet btn me-3"

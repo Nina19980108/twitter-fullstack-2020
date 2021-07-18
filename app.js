@@ -12,7 +12,7 @@ const passport = require('./config/passport')
 const db = require('./models') // 引入資料庫
 
 const app = express()
-const port = process.env.PORT
+const port = process.env.PORT || 3000
 
 app.engine('hbs', exphbs({
   defaultLayout: 'main',
@@ -65,30 +65,34 @@ io.on('connection', (socket) => {
   if (id) {
     onlineUsers.push({ id, name, account, avatar })
   }
+
+  console.log(onlineUsers)
   const set = new Set()
   // 若 user.id 沒出現過 set 中, 將 user.id 推入 set 中, 後續若有重複 user.id, 會被 filter 略過
   onlineUsers = onlineUsers.filter(user =>
     !set.has(user.id) ? set.add(user.id) : false)
   console.log('==============================================') // 除錯用分隔線
+  console.log(set)
   // // 使用者清單中, 抓取當前登入者
   const localUser = onlineUsers.find(user => user.id === id)
+  console.log(localUser)
 
-  // 發送所有上線使用者清單
+  // // 發送所有上線使用者清單
   io.emit('onlineUsers', onlineUsers)
 
-  // 廣播 通知所有人 有 使用者 上線
-  socket.broadcast.emit('broadcast', `${localUser.name} 加入聊天室`)
+  // // 廣播 通知所有人 有 使用者 上線
+  // socket.broadcast.emit('broadcast', `${localUser.name} 加入聊天室`)
 
 
   socket.on('disconnect', () => {
     console.log('斷線')
-    // 更新連線人數
+    //   // 更新連線人數
     onlineCount--
     io.emit('onlineCount', onlineCount)
-    // 從上線清單移除當前登入者, 更新上線清單
+    //   // 從上線清單移除當前登入者, 更新上線清單
     onlineUsers = onlineUsers.filter(user => user.id !== localUser.id)
     io.emit('onlineUsers', onlineUsers)
-    socket.broadcast.emit('broadcast', `${localUser.name} 離開聊天室`)
+    // socket.broadcast.emit('broadcast', `${localUser.name} 離開聊天室`)
   })
 
   // 收到發留言事件, 儲存消息, 並推送到前端去更新留言
