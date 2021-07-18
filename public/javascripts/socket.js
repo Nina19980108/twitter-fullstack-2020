@@ -3,8 +3,29 @@ const socketForm = document.getElementById('socketForm')  // layouts/main.hbs �
 const socketMsg = document.getElementById('socketMsg')    // layouts/main.hbs 的 Form id
 let messages = document.getElementById('messages');
 const onlineUsers = []  // 儲存上線使用者人數之陣列
-
+const onlineList = document.getElementById('onlineList')
 // 當前上線人數
+function displayOnlineList(onlineUsersData) {
+  let onlineListHTML = ''
+  onlineUsersData.forEach(function (user) {
+    onlineListHTML += `
+    <div>
+      <a href="/users/${user.id}/tweets">
+      <img src="${user.avatar}"
+        style="border-radius: 0.7em;height: 21vh;width: 21vh;margin-left:0.4em;object-fit: cover;">
+      </a>
+      <div style="color:#313c4b;width:9vw" class="d-flex align-items-center justify-content-center p-2">
+       <div class="d-flex flex-column m-1 ms-4" style="">
+        <p class="m-0 fw-bolder">${user.name}</p>
+        <p class="m-0" style="color: #313c4b6b;">${user.account}</p>
+       </div>
+      </div>
+    </div>
+  `
+  })
+  onlineList.innerHTML = onlineListHTML
+}
+
 socket.on('onlineCount', onlineCount => {
   console.log('Front get onlineCount', onlineCount)
   // DOM: 刷新頁面 上線人數
@@ -15,6 +36,8 @@ socket.on('onlineUsers', onlineUsersData => {
   onlineUsers.push(onlineUsersData)
   console.log('Online User List', onlineUsers)
   // DOM: 刷新頁面 上線使用者清單
+  displayOnlineList(onlineUsersData)
+
 })
 
 // 廣播訊息: xxx 進入/離開 聊天室
