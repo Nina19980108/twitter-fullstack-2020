@@ -272,8 +272,9 @@
           {{{ body }}}
         </div>
 
-
+        {{!-- 聊天上線者 --}}
         {{#if publicSocketPage}}
+        <div style="margin-left:76vw" class="mt-2">{{> onlineUsers }}</div>
         {{else}}
         {{!-- 右側欄位 --}}
         {{!-- 管理者登入 --}}
