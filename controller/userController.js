@@ -75,8 +75,6 @@ const userController = {
       const topFollowing = res.locals.data
       const userInfo = res.locals.userInfo
       const user = helpers.getUser(req)
-      const shareModal = true
-      const editModal = true
       let myPage = true
       if (Number(req.params.userId) !== helpers.getUser(req).id) {
         myPage = false
@@ -133,10 +131,7 @@ const userController = {
             tweetUserAvatar: tweetUser.avatar,
             tweetUserAccount: tweetUser.account,
             likeCount: likes.count,
-            replyCount: replies.count,
-            myPage,
-            shareModal,
-            editModal
+            replyCount: replies.count
           }
         }
       })
@@ -166,8 +161,6 @@ const userController = {
       const topFollowing = res.locals.data
       const userInfo = res.locals.userInfo
       const user = helpers.getUser(req)
-      const shareModal = true
-      const editModal = true
       let myPage = true
       if (Number(req.params.userId) !== helpers.getUser(req).id) {
         myPage = false
@@ -177,7 +170,7 @@ const userController = {
         raw: true,
         nest: true,
         //使用者發的所有推文
-        where: { UserId: userInfo.user.id },
+        where: { userId: userInfo.user.id },
         order: [
           ['createdAt', 'DESC']
         ]
@@ -219,9 +212,7 @@ const userController = {
           topFollowing,
           isFollowed,
           allowEdit,
-          myPage,
-          shareModal,
-          editModal
+          myPage
         })
       })
     } catch (err) {
@@ -238,8 +229,6 @@ const userController = {
       const topFollowing = res.locals.data
       const userInfo = res.locals.userInfo
       const user = helpers.getUser(req)
-      const shareModal = true
-      const editModal = true
       let myPage = true
       if (Number(req.params.userId) !== helpers.getUser(req).id) {
         myPage = false
@@ -313,9 +302,7 @@ const userController = {
           likeCount,
           allowEdit,
           isFollowed,
-          myPage,
-          shareModal,
-          editModal
+          myPage
         })
       })
     }
@@ -332,7 +319,6 @@ const userController = {
       const user = helpers.getUser(req)
       const userInfo = res.locals.userInfo
       const { userId } = req.params
-      const shareModal = true
 
       const tweets = await Tweet.findAndCountAll({
         raw: true,
@@ -378,8 +364,7 @@ const userController = {
           user,
           data,
           tweetCount,
-          topFollowing,
-          shareModal
+          topFollowing
         })
       })
     }
@@ -397,7 +382,6 @@ const userController = {
       const user = helpers.getUser(req)
       const userInfo = res.locals.userInfo
       const { userId } = req.params
-      const shareModal = true
 
       const tweets = await Tweet.findAndCountAll({
         raw: true,
@@ -443,8 +427,7 @@ const userController = {
           user,
           data,
           tweetCount,
-          topFollowing,
-          shareModal
+          topFollowing
         })
       })
     }
@@ -460,12 +443,10 @@ const userController = {
     const topFollowing = res.locals.data
     const userEditPage = true
     const user = helpers.getUser(req)
-    const shareModal = true
     return res.render('userEdit', {
       user,
       topFollowing,
-      userEditPage,
-      shareModal
+      userEditPage
     })
   },
 
@@ -570,7 +551,6 @@ const userController = {
       next()
     })
   },
-
   //MiddleWare
   getUserInfo: (req, res, next) => {
     return User.findOne({
@@ -581,7 +561,7 @@ const userController = {
       Followship.findAndCountAll({
         raw: true,
         nest: true,
-        where: { followerId: user.id },
+        where: { followerId: user.id }
       }).then(following => {
         Followship.findAndCountAll({
           raw: true,
@@ -590,6 +570,8 @@ const userController = {
         }).then(follower => {
           res.locals.userInfo = {
             user: user.dataValues,
+            followings: following.rows,
+            followers: follower.rows,
             followingCount: following.count,
             followerCount: follower.count,
             followers: follower.rows,
