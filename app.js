@@ -90,7 +90,7 @@ io.on('connection', (socket) => {
     onlineCount--
     io.emit('onlineCount', onlineCount)
     //   // 從上線清單移除當前登入者, 更新上線清單
-    onlineUsers = onlineUsers.filter(user => user.id !== localUser.id)
+    // onlineUsers = onlineUsers.filter(user => user.id !== localUser.id)
     io.emit('onlineUsers', onlineUsers)
     // socket.broadcast.emit('broadcast', `${localUser.name} 離開聊天室`)
   })
